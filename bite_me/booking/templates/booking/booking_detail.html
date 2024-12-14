@@ -1,0 +1,14 @@
+{% extends 'booking/base.html' %}
+{% block content %}
+<h2>Reservation Details</h2>
+<p><strong>Date:</strong> {{ reservation.date }}</p>
+<p><strong>Time:</strong> {{ reservation.time }}</p>
+<p><strong>Guests:</strong> {{ reservation.guests }}</p>
+<p><strong>Tables:</strong> 
+    {% for table in reservation.tables.all %}
+        {{ table.number }} (capacity: {{ table.capacity }})
+        {% if not forloop.last %}, {% endif %}
+    {% endfor %}
+</p>
+<a href="{% url 'my_bookings' %}" class="btn btn-secondary">Back to Bookings</a>
+{% endblock %}

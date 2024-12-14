@@ -1,0 +1,12 @@
+{% extends 'booking/base.html' %}
+{% block content %}
+<h2>Our Menu</h2>
+{% for category in categories %}
+  <h3>{{ category.name }}</h3>
+  <ul>
+    {% for item in category.items.all %}
+      <li><strong>{{ item.name }}</strong> - ${{ item.price }}<br>{{ item.description }}</li>
+    {% endfor %}
+  </ul>
+{% endfor %}
+{% endblock %}

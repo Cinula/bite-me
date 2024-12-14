@@ -1,0 +1,33 @@
+{% extends 'booking/base.html' %}
+{% block content %}
+<h2>Manage All Bookings</h2>
+<!-- For site owner (staff) to see all bookings -->
+<!-- You would need a corresponding view in booking/views.py and URL in booking/urls.py -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Guests</th>
+            <th>Tables</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for res in all_reservations %}
+        <tr>
+            <td>{{ res.user.username }}</td>
+            <td>{{ res.date }}</td>
+            <td>{{ res.time }}</td>
+            <td>{{ res.guests }}</td>
+            <td>
+                {% for table in res.tables.all %}
+                    {{ table.number }}
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
