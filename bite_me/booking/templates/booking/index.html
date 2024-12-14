@@ -1,5 +1,6 @@
 <!-- booking/templates/booking/index.html -->
 {% extends 'booking/base.html' %}
+{% load static %}
 {% block content %}
 <!-- Hero Section -->
 <div class="row align-items-center g-5 py-5">
@@ -10,12 +11,14 @@
     <a href="{% url 'menu' %}" class="btn btn-outline-secondary btn-lg mt-3 ms-2">View Our Menu</a>
   </div>
   <div class="col-lg-6">
+    <img src="{% static 'img/restaurant-interior.jpg' %}" class="img-fluid rounded" alt="Restaurant Interior">
   </div>
 </div>
 
 <!-- About Section -->
 <div class="row py-5">
   <div class="col-md-6">
+    <img src="{% static 'img/chef.jpg' %}" class="img-fluid rounded" alt="Chef">
   </div>
   <div class="col-md-6 d-flex flex-column justify-content-center">
     <h2 class="fw-bold">Our Story</h2>
@@ -28,18 +31,21 @@
   <h2 class="fw-bold mb-4">Why Dine With Us?</h2>
   <div class="col-md-4">
     <div class="p-4">
+      <img src="{% static 'img/icon-fresh-ingredients.png' %}" height="60" alt="Fresh Ingredients">
       <h4 class="mt-3">Fresh Ingredients</h4>
       <p>Only the freshest, locally sourced ingredients.</p>
     </div>
   </div>
   <div class="col-md-4">
     <div class="p-4">
+      <img src="{% static 'img/icon-chef-hat.png' %}" height="60" alt="Expert Chefs">
       <h4 class="mt-3">Expert Chefs</h4>
       <p>Our culinary team brings years of experience and creativity.</p>
     </div>
   </div>
   <div class="col-md-4">
     <div class="p-4">
+      <img src="{% static 'img/icon-ambience.png' %}" height="60" alt="Luxurious Ambience">
       <h4 class="mt-3">Luxurious Ambience</h4>
       <p>Dine in a refined setting that balances modern luxury.</p>
     </div>
