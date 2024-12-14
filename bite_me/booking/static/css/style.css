@@ -1,0 +1,42 @@
+/* booking/static/css/style.css */
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand img {
+    margin-right: 10px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 600;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.alert {
+    position: relative;
+}
+
+.alert .btn-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+}

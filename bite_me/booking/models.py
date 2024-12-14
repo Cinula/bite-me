@@ -1,3 +1,5 @@
+# booking/models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -7,7 +9,7 @@ class Table(models.Model):
     capacity = models.IntegerField()
 
     def __str__(self):
-        return f"Table {self.number} (capacity: {self.capacity})"
+        return f"Table {self.number} (Capacity: {self.capacity})"
 
 
 class Reservation(models.Model):

@@ -1,9 +1,11 @@
+<!-- booking/templates/booking/booking_form.html -->
 {% extends 'booking/base.html' %}
 {% block content %}
 <h2>Book a Table</h2>
-<form method="POST">
+<p>Select your preferred date, time, and number of guests.</p>
+<form method="POST" class="col-md-6">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Reserve</button>
+    <button type="submit" class="btn btn-primary">Reserve</button>
 </form>
 {% endblock %}

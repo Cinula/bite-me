@@ -1,12 +1,20 @@
+<!-- booking/templates/booking/menu.html -->
 {% extends 'booking/base.html' %}
 {% block content %}
-<h2>Our Menu</h2>
+<h2 class="mb-4">Our Menu</h2>
 {% for category in categories %}
-  <h3>{{ category.name }}</h3>
-  <ul>
+  <h3 class="my-3">{{ category.name }}</h3>
+  <div class="row g-3">
     {% for item in category.items.all %}
-      <li><strong>{{ item.name }}</strong> - ${{ item.price }}<br>{{ item.description }}</li>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ item.name }} - ${{ item.price }}</h5>
+            <p class="card-text">{{ item.description }}</p>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </ul>
+  </div>
 {% endfor %}
 {% endblock %}

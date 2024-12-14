@@ -1,9 +1,10 @@
+<!-- booking/templates/booking/register.html -->
 {% extends 'booking/base.html' %}
 {% block content %}
-<h2>Register</h2>
-<form method="POST">
+<h2 class="mb-4">Register</h2>
+<form method="POST" class="col-md-6">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit" class="btn btn-primary">Create Account</button>
 </form>
 {% endblock %}
