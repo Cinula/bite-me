@@ -3,246 +3,148 @@
 {% load static %}
 {% block content %}
 <div class="container py-4">
-    <!-- Header Section -->
+    <!-- Header -->
     <div class="row mb-4">
-        <div class="col-lg-8">
+        <div class="col-12">
             <div class="d-flex align-items-center">
                 <i class="bi bi-calendar-check fs-2 text-primary me-3"></i>
                 <div>
                     <h2 class="mb-1">My Bookings</h2>
-                    <p class="text-muted mb-0">Manage your restaurant reservations</p>
+                    <p class="text-muted mb-0">View and manage your reservations</p>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-4 text-lg-end">
-            <a href="{% url 'book' %}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> New Reservation
-            </a>
         </div>
     </div>
 
-    {% if reservations %}
-        <!-- Bookings List -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3">
-                        <ul class="nav nav-pills card-header-pills" id="bookingsTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#upcoming" type="button">
-                                    <i class="bi bi-calendar-event"></i> Upcoming
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#past" type="button">
-                                    <i class="bi bi-calendar-check"></i> Past
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cancelled" type="button">
-                                    <i class="bi bi-calendar-x"></i> Cancelled
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="tab-content" id="bookingsTabContent">
-                            <!-- Upcoming Reservations -->
-                            <div class="tab-pane fade show active" id="upcoming">
-                                <div class="list-group list-group-flush">
-                                    {% for reservation in reservations %}
-                                        {% if not reservation.canceled and reservation.date >= today %}
-                                            <div class="list-group-item p-4">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-2 text-center text-md-start mb-3 mb-md-0">
-                                                        <div class="date-badge">
-                                                            <div class="month">{{ reservation.date|date:"M" }}</div>
-                                                            <div class="day">{{ reservation.date|date:"d" }}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 mb-3 mb-md-0">
-                                                        <h5 class="mb-1">Table for {{ reservation.guests }}</h5>
-                                                        <p class="mb-0 text-muted">
-                                                            <i class="bi bi-clock"></i> {{ reservation.time|time:"g:i A" }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3 mb-md-0">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="bi bi-people text-primary me-2"></i>
-                                                            <span>{{ reservation.guests }} {% if reservation.guests == 1 %}person{% else %}people{% endif %}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3 text-md-end">
-                                                        <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-outline-primary btn-sm me-2">
-                                                            <i class="bi bi-eye"></i> View
-                                                        </a>
-                                                        <a href="{% url 'cancel_reservation' reservation.pk %}" class="btn btn-outline-danger btn-sm">
-                                                            <i class="bi bi-x-circle"></i> Cancel
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endif %}
+    <!-- Bookings Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Date & Time</th>
+                        <th>Guests</th>
+                        <th>Tables</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="date-badge me-3">
+                                        <div class="month">{{ reservation.date|date:"M" }}</div>
+                                        <div class="day">{{ reservation.date|date:"d" }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">{{ reservation.date|date:"l, F j, Y" }}</div>
+                                        <div class="small text-muted">{{ reservation.time|time:"g:i A" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-people text-primary me-2"></i>
+                                    {{ reservation.guests }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-grid text-primary me-2"></i>
+                                    {% for table in reservation.tables.all %}
+                                        <span class="badge bg-light text-dark me-1">Table {{ table.number }}</span>
+                                    {% empty %}
+                                        <span class="text-muted">No tables assigned</span>
                                     {% endfor %}
                                 </div>
-                            </div>
-
-                            <!-- Past Reservations -->
-                            <div class="tab-pane fade" id="past">
-                                <div class="list-group list-group-flush">
-                                    {% for reservation in reservations %}
-                                        {% if not reservation.canceled and reservation.date < today %}
-                                            <div class="list-group-item p-4">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-2 text-center text-md-start mb-3 mb-md-0">
-                                                        <div class="date-badge date-badge-past">
-                                                            <div class="month">{{ reservation.date|date:"M" }}</div>
-                                                            <div class="day">{{ reservation.date|date:"d" }}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-7">
-                                                        <h5 class="mb-1">Table for {{ reservation.guests }}</h5>
-                                                        <p class="mb-0 text-muted">
-                                                            <i class="bi bi-clock"></i> {{ reservation.time|time:"g:i A" }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-3 text-md-end">
-                                                        <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-outline-secondary btn-sm">
-                                                            <i class="bi bi-eye"></i> View Details
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
+                            </td>
+                            <td>
+                                {% if reservation.canceled %}
+                                    <span class="badge bg-danger-subtle text-danger">Cancelled</span>
+                                {% elif reservation.date < today %}
+                                    <span class="badge bg-secondary-subtle text-secondary">Past</span>
+                                {% else %}
+                                    <span class="badge bg-success-subtle text-success">Upcoming</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <a href="{% url 'booking_detail' reservation.pk %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if not reservation.canceled and reservation.date >= today %}
+                                        <a href="{% url 'modify_reservation' reservation.pk %}" 
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    {% endif %}
                                 </div>
-                            </div>
-
-                            <!-- Cancelled Reservations -->
-                            <div class="tab-pane fade" id="cancelled">
-                                <div class="list-group list-group-flush">
-                                    {% for reservation in reservations %}
-                                        {% if reservation.canceled %}
-                                            <div class="list-group-item p-4">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-2 text-center text-md-start mb-3 mb-md-0">
-                                                        <div class="date-badge date-badge-cancelled">
-                                                            <div class="month">{{ reservation.date|date:"M" }}</div>
-                                                            <div class="day">{{ reservation.date|date:"d" }}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-7">
-                                                        <h5 class="mb-1">Table for {{ reservation.guests }}</h5>
-                                                        <p class="mb-0 text-muted">
-                                                            <i class="bi bi-clock"></i> {{ reservation.time|time:"g:i A" }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-3 text-md-end">
-                                                        <span class="badge bg-danger">Cancelled</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-calendar-x fs-1 mb-3 d-block"></i>
+                                    <h5>No Reservations Found</h5>
+                                    <p class="mb-3">You haven't made any reservations yet</p>
+                                    <a href="{% url 'book' %}" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-2"></i>Make a Reservation
+                                    </a>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    {% else %}
-        <!-- No Bookings State -->
-        <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <div class="card border-0 shadow-sm p-5">
-                    <img src="{% static 'img/no-bookings.svg' %}" alt="No bookings" class="img-fluid mb-4" style="max-height: 200px;">
-                    <h3>No Reservations Yet</h3>
-                    <p class="text-muted mb-4">You haven't made any reservations. Would you like to book a table?</p>
-                    <div>
-                        <a href="{% url 'book' %}" class="btn btn-primary">
-                            <i class="bi bi-calendar-plus"></i> Make Your First Reservation
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    </div>
 </div>
 
 <!-- Add custom styles -->
 <style>
-.nav-pills .nav-link {
-    color: #6c757d;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
-}
-
-.nav-pills .nav-link:hover {
-    color: #0d6efd;
-    background-color: #f8f9fa;
-}
-
-.nav-pills .nav-link.active {
-    background-color: #0d6efd;
-    color: white;
-}
-
 .date-badge {
     background: #f8f9fa;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 0.5rem;
-    width: 80px;
-    margin: 0 auto;
+    width: 50px;
+    text-align: center;
 }
 
 .date-badge .month {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: #6c757d;
     text-transform: uppercase;
     font-weight: 600;
 }
 
 .date-badge .day {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: #0d6efd;
 }
 
-.date-badge-past {
-    background: #f8f9fa;
+.table th {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.date-badge-past .day {
-    color: #6c757d;
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
 }
 
-.date-badge-cancelled {
-    background: #fee2e2;
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
 }
 
-.date-badge-cancelled .day {
-    color: #dc3545;
-}
-
-.list-group-item {
-    transition: transform 0.2s ease-in-out;
-}
-
-.list-group-item:hover {
-    transform: translateX(5px);
+.table-hover tbody tr:hover {
     background-color: #f8f9fa;
-}
-
-@media (max-width: 768px) {
-    .date-badge {
-        margin-bottom: 1rem;
-    }
-    
-    .list-group-item {
-        padding: 1rem !important;
-    }
 }
 </style>
 {% endblock %}
