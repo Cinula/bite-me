@@ -39,7 +39,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, "Logged in successfully.")
-            return redirect('index')
+            return redirect('dashboard')
         else:
             messages.error(request, "Invalid username or password. Please try again.")
     else:
@@ -107,6 +107,29 @@ def cancel_reservation_view(request, pk):
         messages.success(request, "Reservation canceled successfully.")
         return redirect('my_bookings')
     return render(request, 'booking/cancellation.html', {'reservation': reservation})
+
+
+@login_required
+def dashboard_view(request):
+    """User dashboard showing reservations and account info."""
+    # Get user's upcoming reservations
+    upcoming_reservations = request.user.reservations.filter(
+        date__gte=datetime.now().date(),
+        canceled=False
+    ).order_by('date', 'time')[:5]
+    
+    # Get user's past reservations
+    past_reservations = request.user.reservations.filter(
+        date__lt=datetime.now().date(),
+        canceled=False
+    ).order_by('-date', '-time')[:5]
+    
+    context = {
+        'upcoming_reservations': upcoming_reservations,
+        'past_reservations': past_reservations,
+        'user': request.user,
+    }
+    return render(request, 'booking/dashboard.html', context)
 
 
 # Helper functions

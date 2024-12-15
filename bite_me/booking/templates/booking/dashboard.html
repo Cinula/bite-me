@@ -1,0 +1,171 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body p-4">
+                    <h2 class="card-title mb-0">Welcome, {{ user.username }}!</h2>
+                    <p class="card-text mt-2 mb-0">Manage your reservations and account settings here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex gap-3">
+                <a href="{% url 'book' %}" class="btn btn-primary">
+                    <i class="bi bi-calendar-plus"></i> New Reservation
+                </a>
+                <a href="{% url 'menu' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-menu-button-wide"></i> View Menu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Reservations -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <h3 class="h5 mb-0">Upcoming Reservations</h3>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_reservations %}
+                        <div class="list-group list-group-flush">
+                            {% for reservation in upcoming_reservations %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ reservation.date|date:"F j, Y" }}</h6>
+                                            <p class="mb-1 text-muted">{{ reservation.time|time:"g:i A" }} • {{ reservation.guests }} guests</p>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                                            <a href="{% url 'cancel_reservation' reservation.pk %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if upcoming_reservations.count > 5 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'my_bookings' %}" class="btn btn-link">View All Reservations</a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted mb-0">No upcoming reservations. <a href="{% url 'book' %}">Make a reservation</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Past Reservations -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-white">
+                    <h3 class="h5 mb-0">Past Reservations</h3>
+                </div>
+                <div class="card-body">
+                    {% if past_reservations %}
+                        <div class="list-group list-group-flush">
+                            {% for reservation in past_reservations %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ reservation.date|date:"F j, Y" }}</h6>
+                                            <p class="mb-1 text-muted">{{ reservation.time|time:"g:i A" }} • {{ reservation.guests }} guests</p>
+                                        </div>
+                                        <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-sm btn-outline-secondary">View</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if past_reservations.count > 5 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'my_bookings' %}" class="btn btn-link">View All Reservations</a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted mb-0">No past reservations.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h3 class="h5 mb-0">Account Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Username</label>
+                        <p class="mb-0">{{ user.username }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Email</label>
+                        <p class="mb-0">{{ user.email }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Member Since</label>
+                        <p class="mb-0">{{ user.date_joined|date:"F j, Y" }}</p>
+                    </div>
+                    <a href="#" class="btn btn-outline-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.btn-link {
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}

@@ -4,7 +4,7 @@ from django.urls import path
 from .views import (
     index_view, register_view, login_view, logout_view,
     menu_view, create_reservation_view, my_bookings_view,
-    booking_detail_view, cancel_reservation_view
+    booking_detail_view, cancel_reservation_view, dashboard_view
 )
 
 urlpatterns = [
@@ -17,4 +17,5 @@ urlpatterns = [
     path('my-bookings/', my_bookings_view, name='my_bookings'),
     path('booking/<int:pk>/', booking_detail_view, name='booking_detail'),
     path('booking/<int:pk>/cancel/', cancel_reservation_view, name='cancel_reservation'),
+    path('dashboard/', dashboard_view, name='dashboard'),
 ]

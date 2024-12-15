@@ -97,3 +97,47 @@ h6 {
         min-width: 100%;
     }
 }
+
+/* Registration Form Styles */
+.auth-container {
+    min-height: calc(100vh - 76px);
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.password-requirements ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.password-requirements ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.password-requirements ul li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #0d6efd;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+    }
+}
