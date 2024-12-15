@@ -320,7 +320,7 @@
 </div>
 
 <!-- Delete Form (Hidden) -->
-<form id="deleteForm" method="POST" style="display: none;">
+<form id="deleteForm" method="POST">
     {% csrf_token %}
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="item_id" id="deleteItemId">

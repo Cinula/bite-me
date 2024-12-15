@@ -21,28 +21,46 @@ def is_staff_user(user):
 
 @user_passes_test(is_staff_user)
 def menu_edit_view(request):
-    """
-    Render the menu management page for admins.
-    Allows adding new menu items and viewing existing ones.
-    """
-    categories = Category.objects.all()
-    items = MenuItem.objects.select_related('category').all()
-
+    """Handle menu editing."""
     if request.method == 'POST':
-        form = MenuItemForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Menu item added successfully.")
+        action = request.POST.get('action')
+        
+        if action == 'add':
+            form = MenuItemForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Menu item added successfully.')
+                return redirect('menu_edit')
+            else:
+                messages.error(request, 'Error adding menu item. Please check the form.')
+        
+        elif action == 'edit':
+            item_id = request.POST.get('item_id')
+            item = MenuItem.objects.get(id=item_id)
+            form = MenuItemForm(request.POST, request.FILES, instance=item)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Menu item updated successfully.')
+                return redirect('menu_edit')
+            else:
+                messages.error(request, 'Error updating menu item. Please check the form.')
+        
+        elif action == 'delete':
+            item_id = request.POST.get('item_id')
+            try:
+                item = MenuItem.objects.get(id=item_id)
+                item.delete()
+                messages.success(request, 'Menu item deleted successfully.')
+            except MenuItem.DoesNotExist:
+                messages.error(request, 'Menu item not found.')
             return redirect('menu_edit')
-        else:
-            messages.error(request, "Error adding menu item. Please check the form.")
-    else:
-        form = MenuItemForm()
-
+    
+    categories = Category.objects.prefetch_related('items').all()
+    form = MenuItemForm()
+    
     context = {
-        'form': form,
         'categories': categories,
-        'items': items
+        'form': form,
     }
     return render(request, 'menu/menu_edit.html', context)
 
