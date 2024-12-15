@@ -11,11 +11,21 @@ class Category(models.Model):
 
 
 class MenuItem(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='items')
+    MEAL_TYPES = [
+        ('breakfast', 'Breakfast'),
+        ('lunch', 'Lunch'),
+        ('dinner', 'Dinner')
+    ]
+
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
+    description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    image = models.ImageField(upload_to='menu_items/', blank=True, null=True)
+    category = models.ForeignKey(Category, related_name='items', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='menu_items/', null=True, blank=True)
+    meal_type = models.CharField(max_length=10, choices=MEAL_TYPES, default='lunch')
+
+    class Meta:
+        ordering = ['category', 'name']
 
     def __str__(self):
         return self.name
