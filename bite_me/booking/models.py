@@ -41,3 +41,32 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.subject} - {self.name}"
+
+
+class EmailLog(models.Model):
+    EMAIL_TYPES = [
+        ('password_reset', 'Password Reset'),
+        ('welcome', 'Welcome Email'),
+        ('notification', 'Notification')
+    ]
+    
+    STATUS_CHOICES = [
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('pending', 'Pending')
+    ]
+    
+    email_to = models.EmailField()
+    email_type = models.CharField(max_length=50, choices=EMAIL_TYPES)
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    error_message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.email_type} to {self.email_to} - {self.status}"

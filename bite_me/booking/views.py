@@ -7,9 +7,15 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from datetime import datetime, timedelta
 from django.http import JsonResponse
+from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from .forms import RegistrationForm, ReservationForm, UserProfileForm
-from .models import Reservation, Table, Contact
+from .models import Reservation, Table, Contact, EmailLog
 
 def index_view(request):
     """Render the homepage."""
@@ -526,3 +532,46 @@ def update_message_status(request, pk):
             messages.success(request, 'Message deleted successfully.')
     
     return redirect('manage_messages')
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'booking/password/password_reset.html'
+    email_template_name = 'booking/password/password_reset_email.html'
+    subject_template_name = 'booking/password/password_reset_subject.txt'
+    success_url = reverse_lazy('password_reset_done')
+    
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        if not User.objects.filter(email=email).exists():
+            form.add_error('email', 'No user found with this email address.')
+            return self.form_invalid(form)
+        
+        try:
+            # Create email log entry
+            email_log = EmailLog.objects.create(
+                email_to=email,
+                email_type='password_reset',
+                subject='Password Reset for Bite Me Account',
+                message='Password reset email sent',
+                status='pending'
+            )
+            
+            # Send email using parent class method
+            response = super().form_valid(form)
+            
+            # Update email log as successful
+            email_log.status = 'success'
+            email_log.sent_at = timezone.now()
+            email_log.save()
+            
+            return response
+            
+        except Exception as e:
+            # Log the error
+            if email_log:
+                email_log.status = 'failed'
+                email_log.error_message = str(e)
+                email_log.save()
+            
+            # Add error message for the user
+            messages.error(self.request, 'There was an error sending the password reset email. Please try again.')
+            return self.form_invalid(form)

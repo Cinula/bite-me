@@ -8,8 +8,10 @@ from .views import (
     modify_reservation_view, profile_view, delete_account_view,
     admin_reservations_view, admin_update_reservation_status,
     admin_tables_view, edit_table_view, check_availability_view,
-    contact_view, manage_messages_view, update_message_status
+    contact_view, manage_messages_view, update_message_status,
+    CustomPasswordResetView
 )
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', index_view, name='index'),
@@ -33,4 +35,27 @@ urlpatterns = [
     path('contact/', contact_view, name='contact'),
     path('manage/messages/', manage_messages_view, name='manage_messages'),
     path('manage/message/<int:pk>/status/', update_message_status, name='update_message_status'),
+    # Password Reset URLs
+    path('password-reset/', 
+         CustomPasswordResetView.as_view(),
+         name='password_reset'),
+    
+    path('password-reset/done/',
+         auth_views.PasswordResetDoneView.as_view(
+             template_name='booking/password/password_reset_done.html'
+         ),
+         name='password_reset_done'),
+    
+    path('password-reset-confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name='booking/password/password_reset_confirm.html',
+             success_url='/password-reset-complete/'
+         ),
+         name='password_reset_confirm'),
+    
+    path('password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='booking/password/password_reset_complete.html'
+         ),
+         name='password_reset_complete'),
 ]

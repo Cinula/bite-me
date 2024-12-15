@@ -108,3 +108,12 @@ if not os.path.exists(MEDIA_ROOT):
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'index'
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Or your email host
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'siddharthshekhar2404@gmail.com'  # Your email
+EMAIL_HOST_PASSWORD = 'Sid@12345'  # Your email app password
+DEFAULT_FROM_EMAIL = 'Bite Me <your-email@gmail.com>'
