@@ -3,6 +3,11 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants as message_constants
+import environ
+
+# Initialize environ
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,8 +67,12 @@ WSGI_APPLICATION = 'bite_me.wsgi.application'
 # Using SQLite by default
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME', default='shelf_crave_brook_900846'),
+        'USER': env('DB_USER', default='uuruog8juk6'),
+        'PASSWORD': env('DB_PASSWORD', default='3Pl4QUK2ZcSS'),
+        'HOST': env('DB_HOST', default='ep-gentle-mountain-a23bxz6h-pooler.eu-central-1.aws.neon.tech'),
+        'PORT': env('DB_PORT', default='5432'),
     }
 }
 
