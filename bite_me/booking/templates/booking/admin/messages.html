@@ -57,11 +57,31 @@
                                 {% endif %}
                             </td>
                             <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-primary" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#messageModal{{ message.id }}">
-                                    <i class="bi bi-eye"></i>
-                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#messageModal{{ message.id }}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    {% if message.is_read %}
+                                        <button class="btn btn-sm btn-outline-warning" 
+                                                onclick="updateMessageStatus('{{ message.id }}', 'mark_unread')"
+                                                title="Mark as unread">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-outline-success" 
+                                                onclick="updateMessageStatus('{{ message.id }}', 'mark_read')"
+                                                title="Mark as read">
+                                            <i class="bi bi-envelope-open"></i>
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteMessage('{{ message.id }}', '{{ message.subject|escapejs }}')"
+                                            title="Delete message">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
 
@@ -117,5 +137,68 @@
             </table>
         </div>
     </div>
+
+    <!-- Add these forms at the bottom of the page -->
+    <form id="messageActionForm" method="POST" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="action" id="messageAction">
+    </form>
+
+    <!-- Add this JavaScript -->
+    <script>
+    function updateMessageStatus(messageId, action) {
+        const form = document.getElementById('messageActionForm');
+        form.action = `/manage/message/${messageId}/status/`;
+        document.getElementById('messageAction').value = action;
+        form.submit();
+    }
+
+    function deleteMessage(messageId, subject) {
+        if (confirm(`Are you sure you want to delete the message "${subject}"?`)) {
+            const form = document.getElementById('messageActionForm');
+            form.action = `/manage/message/${messageId}/status/`;
+            document.getElementById('messageAction').value = 'delete';
+            form.submit();
+        }
+    }
+
+    // Auto-mark messages as read when opened
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageModals = document.querySelectorAll('.modal');
+        messageModals.forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function() {
+                const messageId = this.id.replace('messageModal', '');
+                const statusBadge = document.querySelector(`#status${messageId}`);
+                if (statusBadge && statusBadge.classList.contains('bg-danger-subtle')) {
+                    updateMessageStatus(messageId, 'mark_read');
+                }
+            });
+        });
+    });
+    </script>
+
+    <!-- Add these styles -->
+    <style>
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .btn-group .btn:hover {
+        z-index: 1;
+    }
+
+    .avatar-initial {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .table-light {
+        background-color: rgba(13, 110, 253, 0.05) !important;
+    }
+    </style>
 </div>
 {% endblock %} 

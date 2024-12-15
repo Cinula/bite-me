@@ -505,3 +505,24 @@ def manage_messages_view(request):
         'unread_count': unread_count
     }
     return render(request, 'booking/admin/messages.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def update_message_status(request, pk):
+    """Handle message status updates."""
+    if request.method == 'POST':
+        message = get_object_or_404(Contact, pk=pk)
+        action = request.POST.get('action')
+        
+        if action == 'mark_read':
+            message.is_read = True
+            message.save()
+            messages.success(request, 'Message marked as read.')
+        elif action == 'mark_unread':
+            message.is_read = False
+            message.save()
+            messages.success(request, 'Message marked as unread.')
+        elif action == 'delete':
+            message.delete()
+            messages.success(request, 'Message deleted successfully.')
+    
+    return redirect('manage_messages')
