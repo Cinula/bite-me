@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from datetime import datetime, timedelta
 
-from .forms import RegistrationForm, ReservationForm
+from .forms import RegistrationForm, ReservationForm, UserProfileForm
 from .models import Reservation, Table
 
 def index_view(request):
@@ -182,6 +182,66 @@ def modify_reservation_view(request, pk):
         'reservation': reservation,
     }
     return render(request, 'booking/modify_reservation.html', context)
+
+
+@login_required
+def profile_view(request):
+    """Handle user profile management."""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            current_password = form.cleaned_data.get('current_password')
+            new_password = form.cleaned_data.get('new_password')
+            
+            # First save the basic profile changes
+            user = form.save(commit=False)
+            
+            # Handle password change if requested
+            if new_password:
+                if not current_password:
+                    messages.error(request, 'Current password is required to change password.')
+                    return redirect('profile')
+                
+                if not request.user.check_password(current_password):
+                    messages.error(request, 'Current password is incorrect.')
+                    return redirect('profile')
+                
+                # Set and save the new password
+                user.set_password(new_password)
+                user.save()
+                
+                messages.success(request, 'Profile and password updated successfully. Please login again.')
+                logout(request)
+                return redirect('login')
+            else:
+                # Save profile changes without password change
+                user.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('profile')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    return render(request, 'booking/profile.html', {'form': form})
+
+
+@login_required
+def delete_account_view(request):
+    """Handle account deletion."""
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        user = request.user
+        
+        # Verify password
+        if user.check_password(password):
+            # Delete the user account
+            user.delete()
+            messages.success(request, 'Your account has been successfully deleted.')
+            return redirect('index')
+        else:
+            messages.error(request, 'Incorrect password. Account deletion cancelled.')
+            return redirect('profile')
+    
+    return redirect('profile')
 
 
 # Helper functions

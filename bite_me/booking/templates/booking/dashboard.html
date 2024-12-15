@@ -5,121 +5,186 @@
     <!-- Welcome Section -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-primary text-white">
+            <div class="card bg-primary text-white border-0 welcome-card">
                 <div class="card-body p-4">
-                    <h2 class="card-title mb-0">Welcome, {{ user.username }}!</h2>
-                    <p class="card-text mt-2 mb-0">Manage your reservations and account settings here.</p>
+                    <div class="d-flex align-items-center">
+                        <div class="welcome-icon me-4">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-1">Welcome back, {{ user.username }}!</h2>
+                            <p class="mb-0 opacity-75">Here's what's happening with your reservations</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex gap-3">
-                <a href="{% url 'book' %}" class="btn btn-primary">
-                    <i class="bi bi-calendar-plus"></i> New Reservation
-                </a>
-                <a href="{% url 'menu' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-menu-button-wide"></i> View Menu
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Upcoming Reservations -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-white">
-                    <h3 class="h5 mb-0">Upcoming Reservations</h3>
-                </div>
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <h6 class="card-subtitle ms-3 text-muted">Upcoming Reservations</h6>
+                    </div>
+                    <h3 class="card-title mb-0">{{ upcoming_reservations.count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h6 class="card-subtitle ms-3 text-muted">Past Visits</h6>
+                    </div>
+                    <h3 class="card-title mb-0">{{ past_reservations.count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stats-icon bg-info bg-opacity-10 text-info">
+                            <i class="bi bi-star"></i>
+                        </div>
+                        <h6 class="card-subtitle ms-3 text-muted">Member Since</h6>
+                    </div>
+                    <h3 class="card-title mb-0">{{ user.date_joined|date:"M Y" }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row g-4">
+        <!-- Upcoming Reservations -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-event text-primary me-2"></i>
+                            Upcoming Reservations
+                        </h5>
+                        <a href="{% url 'book' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> New Reservation
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
                     {% if upcoming_reservations %}
                         <div class="list-group list-group-flush">
                             {% for reservation in upcoming_reservations %}
-                                <div class="list-group-item px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">{{ reservation.date|date:"F j, Y" }}</h6>
-                                            <p class="mb-1 text-muted">{{ reservation.time|time:"g:i A" }} • {{ reservation.guests }} guests</p>
+                                <div class="list-group-item p-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <div class="date-badge">
+                                                <div class="month">{{ reservation.date|date:"M" }}</div>
+                                                <div class="day">{{ reservation.date|date:"d" }}</div>
+                                            </div>
                                         </div>
-                                        <div class="btn-group">
-                                            <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-sm btn-outline-primary">View</a>
-                                            <a href="{% url 'cancel_reservation' reservation.pk %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                                        <div class="col">
+                                            <h6 class="mb-1">Table for {{ reservation.guests }}</h6>
+                                            <p class="mb-0 text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ reservation.time|time:"g:i A" }}
+                                            </p>
+                                        </div>
+                                        <div class="col-auto">
+                                            <a href="{% url 'booking_detail' reservation.pk %}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                View Details
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
                         {% if upcoming_reservations.count > 5 %}
-                            <div class="text-center mt-3">
-                                <a href="{% url 'my_bookings' %}" class="btn btn-link">View All Reservations</a>
+                            <div class="text-center p-3">
+                                <a href="{% url 'my_bookings' %}" class="btn btn-link text-decoration-none">
+                                    View All Reservations
+                                </a>
                             </div>
                         {% endif %}
                     {% else %}
-                        <p class="text-muted mb-0">No upcoming reservations. <a href="{% url 'book' %}">Make a reservation</a></p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Past Reservations -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-white">
-                    <h3 class="h5 mb-0">Past Reservations</h3>
-                </div>
-                <div class="card-body">
-                    {% if past_reservations %}
-                        <div class="list-group list-group-flush">
-                            {% for reservation in past_reservations %}
-                                <div class="list-group-item px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">{{ reservation.date|date:"F j, Y" }}</h6>
-                                            <p class="mb-1 text-muted">{{ reservation.time|time:"g:i A" }} • {{ reservation.guests }} guests</p>
-                                        </div>
-                                        <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-sm btn-outline-secondary">View</a>
-                                    </div>
-                                </div>
-                            {% endfor %}
+                        <div class="text-center p-5">
+                            <img src="{% static 'img/no-reservations.svg' %}" alt="No reservations" 
+                                 class="mb-3" style="height: 120px;">
+                            <h5>No Upcoming Reservations</h5>
+                            <p class="text-muted mb-3">Ready to plan your next visit?</p>
+                            <a href="{% url 'book' %}" class="btn btn-primary">
+                                <i class="bi bi-calendar-plus"></i> Make a Reservation
+                            </a>
                         </div>
-                        {% if past_reservations.count > 5 %}
-                            <div class="text-center mt-3">
-                                <a href="{% url 'my_bookings' %}" class="btn btn-link">View All Reservations</a>
-                            </div>
-                        {% endif %}
-                    {% else %}
-                        <p class="text-muted mb-0">No past reservations.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Account Settings -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h3 class="h5 mb-0">Account Information</h3>
+        <!-- Account Info & Quick Actions -->
+        <div class="col-lg-4">
+            <!-- Account Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person text-primary me-2"></i>
+                        Account Information
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label text-muted">Username</label>
-                        <p class="mb-0">{{ user.username }}</p>
+                        <label class="text-muted small">Username</label>
+                        <p class="mb-0 fw-medium">{{ user.username }}</p>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted">Email</label>
-                        <p class="mb-0">{{ user.email }}</p>
+                        <label class="text-muted small">Email</label>
+                        <p class="mb-0 fw-medium">{{ user.email }}</p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Member Since</label>
-                        <p class="mb-0">{{ user.date_joined|date:"F j, Y" }}</p>
+                    <div>
+                        <label class="text-muted small">Member Since</label>
+                        <p class="mb-0 fw-medium">{{ user.date_joined|date:"F j, Y" }}</p>
                     </div>
-                    <a href="#" class="btn btn-outline-primary">Edit Profile</a>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning text-primary me-2"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'book' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            New Reservation
+                        </a>
+                        <a href="{% url 'menu' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-menu-button-wide me-2"></i>
+                            View Menu
+                        </a>
+                        <a href="{% url 'my_bookings' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Booking History
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,9 +193,61 @@
 
 <!-- Add custom styles -->
 <style>
+.welcome-card {
+    background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+    border-radius: 1rem;
+}
+
+.welcome-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-icon i {
+    font-size: 32px;
+}
+
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stats-icon i {
+    font-size: 24px;
+}
+
+.date-badge {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 0.5rem;
+    width: 60px;
+    text-align: center;
+}
+
+.date-badge .month {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.date-badge .day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
 .card {
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 1rem;
     transition: transform 0.2s ease-in-out;
 }
 
@@ -139,33 +256,35 @@
 }
 
 .list-group-item {
-    border-left: none;
-    border-right: none;
+    transition: background-color 0.2s ease-in-out;
 }
 
-.list-group-item:first-child {
-    border-top: none;
+.list-group-item:hover {
+    background-color: #f8f9fa;
 }
 
-.list-group-item:last-child {
-    border-bottom: none;
+.fw-medium {
+    font-weight: 500;
 }
 
-.btn-group .btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-
-.card-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.btn-link {
-    text-decoration: none;
-}
-
-.btn-link:hover {
-    text-decoration: underline;
+@media (max-width: 768px) {
+    .welcome-icon {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .welcome-icon i {
+        font-size: 24px;
+    }
+    
+    .stats-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stats-icon i {
+        font-size: 20px;
+    }
 }
 </style>
 {% endblock %}

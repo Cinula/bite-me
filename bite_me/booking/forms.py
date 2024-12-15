@@ -99,3 +99,43 @@ class ReservationForm(forms.ModelForm):
             if time.hour < 11 or time.hour >= 22:
                 raise forms.ValidationError("Reservations are only accepted between 11:00 AM and 10:00 PM.")
         return time
+
+class UserProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    current_password = forms.CharField(
+        widget=forms.PasswordInput(),
+        required=False,
+        help_text='Enter current password to confirm changes'
+    )
+    new_password = forms.CharField(
+        widget=forms.PasswordInput(),
+        required=False,
+        help_text='Leave blank to keep current password'
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(),
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({'class': 'form-control'})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        current_password = cleaned_data.get('current_password')
+        new_password = cleaned_data.get('new_password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if new_password and not current_password:
+            raise forms.ValidationError('Current password is required to set a new password')
+
+        if new_password != confirm_password:
+            raise forms.ValidationError('New passwords do not match')
+
+        return cleaned_data
