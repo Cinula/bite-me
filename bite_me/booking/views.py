@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django.http import JsonResponse
 
 from .forms import RegistrationForm, ReservationForm, UserProfileForm
-from .models import Reservation, Table
+from .models import Reservation, Table, Contact
 
 def index_view(request):
     """Render the homepage."""
@@ -479,14 +479,29 @@ def check_availability_view(request):
 def contact_view(request):
     """Handle contact form submissions."""
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        subject = request.POST.get('subject')
-        message = request.POST.get('message')
-        
-        # Here you would typically send an email or save to database
-        # For now, just show a success message
-        messages.success(request, 'Thank you for your message. We will get back to you soon!')
-        return redirect('contact')
+        try:
+            contact = Contact.objects.create(
+                name=request.POST.get('name'),
+                email=request.POST.get('email'),
+                subject=request.POST.get('subject'),
+                message=request.POST.get('message')
+            )
+            messages.success(request, 'Thank you for your message. We will get back to you soon!')
+            return redirect('contact')
+        except Exception as e:
+            messages.error(request, 'There was an error sending your message. Please try again.')
+            return redirect('contact')
     
     return render(request, 'booking/contact.html')
+
+@user_passes_test(lambda u: u.is_staff)
+def manage_messages_view(request):
+    """Staff interface for managing contact messages."""
+    messages_list = Contact.objects.all()
+    unread_count = messages_list.filter(is_read=False).count()
+    
+    context = {
+        'messages_list': messages_list,
+        'unread_count': unread_count
+    }
+    return render(request, 'booking/admin/messages.html', context)
