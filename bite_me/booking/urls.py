@@ -5,7 +5,8 @@ from .views import (
     index_view, register_view, login_view, logout_view,
     menu_view, create_reservation_view, my_bookings_view,
     booking_detail_view, cancel_reservation_view, dashboard_view,
-    modify_reservation_view, profile_view, delete_account_view
+    modify_reservation_view, profile_view, delete_account_view,
+    admin_reservations_view, admin_update_reservation_status
 )
 
 urlpatterns = [
@@ -22,4 +23,6 @@ urlpatterns = [
     path('booking/<int:pk>/modify/', modify_reservation_view, name='modify_reservation'),
     path('profile/', profile_view, name='profile'),
     path('delete-account/', delete_account_view, name='delete_account'),
+    path('manage/reservations/', admin_reservations_view, name='admin_reservations'),
+    path('manage/reservation/<int:pk>/status/', admin_update_reservation_status, name='admin_update_reservation_status'),
 ]

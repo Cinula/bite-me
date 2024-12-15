@@ -290,3 +290,72 @@ def is_table_available(table, date, time):
         time__lt=end_time.time()
     )
     return not overlapping.exists()
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_reservations_view(request):
+    """Admin interface for managing reservations."""
+    # Get filter parameters
+    date_filter = request.GET.get('date')
+    status_filter = request.GET.get('status')
+    search_query = request.GET.get('search')
+
+    # Base queryset
+    reservations = Reservation.objects.select_related('user').all()
+
+    # Apply filters
+    if date_filter:
+        try:
+            filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+            reservations = reservations.filter(date=filter_date)
+        except ValueError:
+            pass
+
+    if status_filter:
+        if status_filter == 'upcoming':
+            reservations = reservations.filter(
+                date__gte=datetime.now().date(),
+                canceled=False
+            )
+        elif status_filter == 'past':
+            reservations = reservations.filter(
+                date__lt=datetime.now().date(),
+                canceled=False
+            )
+        elif status_filter == 'canceled':
+            reservations = reservations.filter(canceled=True)
+
+    if search_query:
+        reservations = reservations.filter(
+            user__username__icontains=search_query
+        )
+
+    # Order by date and time
+    reservations = reservations.order_by('-date', '-time')
+
+    context = {
+        'reservations': reservations,
+        'today': datetime.now().date(),
+        'date_filter': date_filter,
+        'status_filter': status_filter,
+        'search_query': search_query
+    }
+    return render(request, 'booking/admin/reservations.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_update_reservation_status(request, pk):
+    """Handle reservation status updates by admin."""
+    if request.method == 'POST':
+        reservation = get_object_or_404(Reservation, pk=pk)
+        action = request.POST.get('action')
+        
+        if action == 'cancel':
+            reservation.canceled = True
+            reservation.save()
+            messages.success(request, f'Reservation #{pk} has been cancelled.')
+        elif action == 'restore':
+            reservation.canceled = False
+            reservation.save()
+            messages.success(request, f'Reservation #{pk} has been restored.')
+        
+    return redirect('admin_reservations')

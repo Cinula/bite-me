@@ -1,0 +1,329 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-calendar-range fs-2 text-primary me-3"></i>
+                <div>
+                    <h2 class="mb-1">Manage Reservations</h2>
+                    <p class="text-muted mb-0">View and manage all restaurant reservations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex justify-content-lg-end">
+                <a href="{% url 'book' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> New Reservation
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <!-- Date Filter -->
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Filter by Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="bi bi-calendar3"></i>
+                        </span>
+                        <input type="date" name="date" class="form-control" value="{{ date_filter }}">
+                    </div>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Filter by Status</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="bi bi-funnel"></i>
+                        </span>
+                        <select name="status" class="form-select">
+                            <option value="">All Reservations</option>
+                            <option value="upcoming" {% if status_filter == 'upcoming' %}selected{% endif %}>Upcoming</option>
+                            <option value="past" {% if status_filter == 'past' %}selected{% endif %}>Past</option>
+                            <option value="canceled" {% if status_filter == 'canceled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">Search by Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ search_query }}">
+                    </div>
+                </div>
+
+                <!-- Filter Button -->
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel-fill"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reservations Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Customer</th>
+                        <th>Date & Time</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td class="ps-4 fw-medium">#{{ reservation.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-initial rounded-circle bg-light text-primary me-2">
+                                        {{ reservation.user.username|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">{{ reservation.user.username }}</div>
+                                        <div class="small text-muted">{{ reservation.user.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-medium">{{ reservation.date|date:"M j, Y" }}</div>
+                                <div class="small text-muted">{{ reservation.time|time:"g:i A" }}</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-people text-primary me-2"></i>
+                                    {{ reservation.guests }}
+                                </div>
+                            </td>
+                            <td>
+                                {% if reservation.canceled %}
+                                    <span class="badge bg-danger-subtle text-danger">Cancelled</span>
+                                {% elif reservation.date < today %}
+                                    <span class="badge bg-secondary-subtle text-secondary">Past</span>
+                                {% else %}
+                                    <span class="badge bg-success-subtle text-success">Upcoming</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            data-bs-toggle="modal" data-bs-target="#detailsModal{{ reservation.id }}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    {% if not reservation.canceled %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="confirmCancel('{{ reservation.id }}')">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-outline-success" 
+                                                onclick="confirmRestore('{{ reservation.id }}')">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Details Modal -->
+                        <div class="modal fade" id="detailsModal{{ reservation.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0">
+                                    <div class="modal-header border-0">
+                                        <h5 class="modal-title">
+                                            <i class="bi bi-info-circle text-primary me-2"></i>
+                                            Reservation Details
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body px-4 py-0">
+                                        <div class="py-3 border-bottom">
+                                            <label class="small text-muted">Customer Information</label>
+                                            <div class="d-flex align-items-center mt-2">
+                                                <div class="avatar-initial rounded-circle bg-light text-primary me-3">
+                                                    {{ reservation.user.username|make_list|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <div class="fw-medium">{{ reservation.user.get_full_name|default:reservation.user.username }}</div>
+                                                    <div class="small text-muted">{{ reservation.user.email }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="py-3 border-bottom">
+                                            <label class="small text-muted">Reservation Details</label>
+                                            <div class="mt-2">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="bi bi-calendar text-primary me-2"></i>
+                                                    {{ reservation.date|date:"l, F j, Y" }}
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="bi bi-clock text-primary me-2"></i>
+                                                    {{ reservation.time|time:"g:i A" }}
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-people text-primary me-2"></i>
+                                                    {{ reservation.guests }} {% if reservation.guests == 1 %}person{% else %}people{% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="py-3 border-bottom">
+                                            <label class="small text-muted">Table Assignment</label>
+                                            <div class="mt-2">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-grid text-primary me-2"></i>
+                                                    {% for table in reservation.tables.all %}
+                                                        Table {{ table.number }}{% if not forloop.last %}, {% endif %}
+                                                    {% empty %}
+                                                        No tables assigned
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="py-3">
+                                            <label class="small text-muted">Status</label>
+                                            <div class="mt-2">
+                                                {% if reservation.canceled %}
+                                                    <span class="badge bg-danger-subtle text-danger">Cancelled</span>
+                                                {% elif reservation.date < today %}
+                                                    <span class="badge bg-secondary-subtle text-secondary">Past</span>
+                                                {% else %}
+                                                    <span class="badge bg-success-subtle text-success">Upcoming</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-calendar-x fs-1 mb-3 d-block"></i>
+                                    <h5>No Reservations Found</h5>
+                                    <p class="mb-0">Try adjusting your filters or create a new reservation</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.avatar-initial {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+
+.input-group-text {
+    border: none;
+}
+
+.form-control, .form-select {
+    border-left: none;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #dee2e6;
+    box-shadow: none;
+}
+</style>
+
+<!-- Add custom scripts -->
+<script>
+function confirmCancel(id) {
+    if (confirm('Are you sure you want to cancel this reservation?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/manage/reservation/${id}/status/`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        const actionInput = document.createElement('input');
+        actionInput.type = 'hidden';
+        actionInput.name = 'action';
+        actionInput.value = 'cancel';
+        
+        form.appendChild(csrfInput);
+        form.appendChild(actionInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function confirmRestore(id) {
+    if (confirm('Are you sure you want to restore this reservation?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/manage/reservation/${id}/status/`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        const actionInput = document.createElement('input');
+        actionInput.type = 'hidden';
+        actionInput.name = 'action';
+        actionInput.value = 'restore';
+        
+        form.appendChild(csrfInput);
+        form.appendChild(actionInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %} 
