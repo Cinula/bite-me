@@ -360,3 +360,63 @@ def admin_update_reservation_status(request, pk):
             messages.success(request, f'Reservation #{pk} has been restored.')
     
     return redirect('admin_reservations')
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_tables_view(request):
+    """Admin interface for managing restaurant tables."""
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'add':
+            number = request.POST.get('number')
+            capacity = request.POST.get('capacity')
+            try:
+                Table.objects.create(number=number, capacity=capacity)
+                messages.success(request, f'Table {number} added successfully.')
+            except Exception as e:
+                messages.error(request, f'Error adding table: {str(e)}')
+        
+        elif action == 'delete':
+            table_id = request.POST.get('table_id')
+            try:
+                table = Table.objects.get(id=table_id)
+                table.delete()
+                messages.success(request, f'Table {table.number} deleted successfully.')
+            except Table.DoesNotExist:
+                messages.error(request, 'Table not found.')
+        
+        return redirect('admin_tables')
+    
+    tables = Table.objects.all().order_by('number')
+    occupied_tables = Table.objects.filter(
+        reservations__date=datetime.now().date(),
+        reservations__canceled=False
+    )
+    
+    context = {
+        'tables': tables,
+        'occupied_tables': occupied_tables,
+        'available_tables': tables.count() - occupied_tables.count()
+    }
+    return render(request, 'booking/admin/tables.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def edit_table_view(request, pk):
+    """Handle table editing."""
+    table = get_object_or_404(Table, pk=pk)
+    
+    if request.method == 'POST':
+        number = request.POST.get('number')
+        capacity = request.POST.get('capacity')
+        
+        try:
+            table.number = number
+            table.capacity = capacity
+            table.save()
+            messages.success(request, f'Table {number} updated successfully.')
+        except Exception as e:
+            messages.error(request, f'Error updating table: {str(e)}')
+        
+        return redirect('admin_tables')
+    
+    return redirect('admin_tables')

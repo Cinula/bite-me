@@ -1,0 +1,452 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-grid-3x3 fs-2 text-primary me-3"></i>
+                <div>
+                    <h2 class="mb-1">Table Management</h2>
+                    <p class="text-muted mb-0">Manage restaurant tables and seating arrangements</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex justify-content-lg-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTableModal">
+                    <i class="bi bi-plus-circle me-2"></i> Add New Table
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Table Layout -->
+        <div class="col-lg-8">
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="stats-icon bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-grid"></i>
+                                </div>
+                                <h6 class="card-subtitle ms-3 text-muted">Total Tables</h6>
+                            </div>
+                            <h3 class="card-title mb-0">{{ tables.count }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="stats-icon bg-success bg-opacity-10 text-success">
+                                    <i class="bi bi-check-circle"></i>
+                                </div>
+                                <h6 class="card-subtitle ms-3 text-muted">Available</h6>
+                            </div>
+                            <h3 class="card-title mb-0">{{ available_tables }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="stats-icon bg-danger bg-opacity-10 text-danger">
+                                    <i class="bi bi-x-circle"></i>
+                                </div>
+                                <h6 class="card-subtitle ms-3 text-muted">Occupied</h6>
+                            </div>
+                            <h3 class="card-title mb-0">{{ occupied_tables.count }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-grid text-primary me-2"></i>
+                        Restaurant Layout
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="restaurant-layout">
+                        <!-- Legend -->
+                        <div class="layout-legend mb-4">
+                            <div class="d-flex flex-wrap gap-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="table-indicator available"></div>
+                                    <span class="ms-2">Available</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="table-indicator occupied"></div>
+                                    <span class="ms-2">Occupied</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Layout Grid -->
+                        <div class="layout-grid">
+                            <!-- Entrance -->
+                            <div class="entrance-area text-center mb-4">
+                                <i class="bi bi-door-open fs-3"></i>
+                                <div class="small text-muted">Entrance</div>
+                            </div>
+
+                            <!-- Tables Grid -->
+                            <div class="tables-grid">
+                                {% for table in tables %}
+                                    <div class="table-item {% if table in occupied_tables %}occupied{% else %}available{% endif %}"
+                                         data-bs-toggle="tooltip" 
+                                         data-bs-title="Table {{ table.number }} ({{ table.capacity }} persons)">
+                                        <div class="table-number">{{ table.number }}</div>
+                                        <div class="table-capacity">{{ table.capacity }}p</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table List -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul text-primary me-2"></i>
+                        Table List
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for table in tables %}
+                            <div class="list-group-item p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="table-status-indicator {% if table in occupied_tables %}bg-danger{% else %}bg-success{% endif %} me-2"></div>
+                                            <h6 class="mb-1">Table {{ table.number }}</h6>
+                                        </div>
+                                        <p class="mb-0 small text-muted">
+                                            <i class="bi bi-people me-1"></i>
+                                            Capacity: {{ table.capacity }} persons
+                                            {% if table in occupied_tables %}
+                                                {% with table_reservations=table.reservations.all %}
+                                                    {% for reservation in table_reservations %}
+                                                        {% if not reservation.canceled and reservation.date == today %}
+                                                            <br><span class="text-danger">Currently occupied: {{ reservation.guests }} persons</span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endwith %}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="editTable('{{ table.id }}', '{{ table.number }}', '{{ table.capacity }}')"
+                                                {% if table in occupied_tables %}disabled{% endif %}
+                                                data-bs-toggle="tooltip"
+                                                data-bs-title="{% if table in occupied_tables %}Cannot edit occupied table{% else %}Edit table{% endif %}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" 
+                                                onclick="confirmDeleteTable('{{ table.id }}', '{{ table.number }}')"
+                                                {% if table in occupied_tables %}disabled{% endif %}
+                                                data-bs-toggle="tooltip"
+                                                data-bs-title="{% if table in occupied_tables %}Cannot delete occupied table{% else %}Delete table{% endif %}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="text-center p-5">
+                                <i class="bi bi-grid-3x3 fs-1 text-muted mb-3 d-block"></i>
+                                <h5>No Tables Added</h5>
+                                <p class="text-muted mb-3">Start by adding your first table</p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTableModal">
+                                    <i class="bi bi-plus-circle me-2"></i> Add New Table
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Table Modal -->
+<div class="modal fade" id="addTableModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add New Table
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label">Table Number</label>
+                        <input type="text" name="number" class="form-control" required>
+                        <div class="invalid-feedback">Please provide a table number.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Seating Capacity</label>
+                        <input type="number" name="capacity" class="form-control" min="1" max="12" required>
+                        <div class="form-text">Maximum capacity: 12 persons</div>
+                        <div class="invalid-feedback">Please provide a valid capacity (1-12).</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Add Table
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Table Form (Hidden) -->
+<form id="deleteTableForm" method="POST" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="table_id" id="deleteTableId">
+</form>
+
+<!-- Add Edit Table Modal -->
+<div class="modal fade" id="editTableModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Edit Table
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editTableForm" method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label">Table Number</label>
+                        <input type="text" name="number" id="editTableNumber" class="form-control" required>
+                        <div class="invalid-feedback">Please provide a table number.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Seating Capacity</label>
+                        <input type="number" name="capacity" id="editTableCapacity" class="form-control" min="1" max="12" required>
+                        <div class="form-text">Maximum capacity: 12 persons</div>
+                        <div class="invalid-feedback">Please provide a valid capacity (1-12).</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stats-icon i {
+    font-size: 24px;
+}
+
+.table-status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.restaurant-layout {
+    position: relative;
+}
+
+.layout-grid {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.table-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+}
+
+.table-indicator.available {
+    background-color: #e7f1ff;
+    border: 2px solid #0d6efd;
+}
+
+.table-indicator.occupied {
+    background-color: #fee2e2;
+    border: 2px solid #dc3545;
+}
+
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+}
+
+.table-item {
+    aspect-ratio: 1;
+    border: 2px solid;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.table-item.available {
+    background-color: #e7f1ff;
+    border-color: #0d6efd;
+}
+
+.table-item.occupied {
+    background-color: #fee2e2;
+    border-color: #dc3545;
+}
+
+.table-number {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.table-capacity {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.entrance-area {
+    color: #6c757d;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.modal-content {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .stats-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stats-icon i {
+        font-size: 20px;
+    }
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-group .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tooltip-inner {
+    text-align: left;
+}
+</style>
+
+<!-- Add custom scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
+
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+
+function confirmDeleteTable(tableId, tableNumber) {
+    if (confirm(`Are you sure you want to delete Table ${tableNumber}? This action cannot be undone.`)) {
+        document.getElementById('deleteTableId').value = tableId;
+        document.getElementById('deleteTableForm').submit();
+    }
+}
+
+function editTable(id, number, capacity) {
+    const modal = new bootstrap.Modal(document.getElementById('editTableModal'));
+    const form = document.getElementById('editTableForm');
+    
+    // Set form action
+    form.action = `/manage/table/${id}/edit/`;
+    
+    // Set form values
+    document.getElementById('editTableNumber').value = number;
+    document.getElementById('editTableCapacity').value = capacity;
+    
+    modal.show();
+}
+
+// Update table item tooltips to show capacity info
+document.querySelectorAll('.table-item').forEach(table => {
+    const capacity = table.dataset.capacity;
+    const isOccupied = table.classList.contains('occupied');
+    
+    let tooltipContent = `Table ${table.querySelector('.table-number').textContent}`;
+    tooltipContent += `<br>Capacity: ${capacity} persons`;
+    
+    if (isOccupied) {
+        tooltipContent += '<br><span class="text-danger">Currently Occupied</span>';
+    }
+    
+    new bootstrap.Tooltip(table, {
+        html: true,
+        title: tooltipContent
+    });
+});
+</script>
+{% endblock %} 
