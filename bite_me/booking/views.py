@@ -70,18 +70,49 @@ def create_reservation_view(request):
         if form.is_valid():
             reservation = form.save(commit=False)
             reservation.user = request.user
-            if check_availability(reservation.date, reservation.time, reservation.guests):
-                reservation.save()
-                allocate_tables(reservation)
-                messages.success(request, "Your reservation has been successfully created!")
-                return redirect('my_bookings')
+            
+            # Get selected tables
+            selected_table_ids = request.POST.getlist('selected_tables')
+            selected_tables = Table.objects.filter(id__in=selected_table_ids)
+            
+            # Calculate total capacity of selected tables
+            total_capacity = sum(table.capacity for table in selected_tables)
+            
+            if total_capacity >= reservation.guests:
+                # Check if all selected tables are available
+                all_tables_available = all(
+                    is_table_available(table, reservation.date, reservation.time)
+                    for table in selected_tables
+                )
+                
+                if all_tables_available:
+                    reservation.save()
+                    reservation.tables.set(selected_tables)
+                    messages.success(request, "Your reservation has been successfully created!")
+                    return redirect('my_bookings')
+                else:
+                    messages.error(request, "Some selected tables are not available. Please choose different tables.")
             else:
-                messages.error(request, "Not enough tables available at the selected time.")
+                messages.error(request, "Selected tables don't have enough capacity for your party size.")
         else:
-            messages.error(request, "Invalid form data. Please check your inputs.")
+            messages.error(request, "Please correct the errors below.")
     else:
         form = ReservationForm()
-    return render(request, 'booking/booking_form.html', {'form': form})
+    
+    # Get available tables for the layout
+    tables = Table.objects.all().order_by('number')
+    occupied_tables = Table.objects.filter(
+        reservations__date=datetime.now().date(),
+        reservations__canceled=False
+    )
+    
+    context = {
+        'form': form,
+        'tables': tables,
+        'occupied_tables': occupied_tables,
+        'today': datetime.now().date()
+    }
+    return render(request, 'booking/booking_form.html', context)
 
 
 @login_required
@@ -420,3 +451,26 @@ def edit_table_view(request, pk):
         return redirect('admin_tables')
     
     return redirect('admin_tables')
+
+@login_required
+def check_availability_view(request):
+    """Check table availability for a given date and time."""
+    date_str = request.GET.get('date')
+    time_str = request.GET.get('time')
+    
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        time = datetime.strptime(time_str, '%H:%M').time()
+        
+        occupied_tables = Table.objects.filter(
+            reservations__date=date,
+            reservations__time__gte=(datetime.combine(date, time) - timedelta(hours=2)).time(),
+            reservations__time__lt=(datetime.combine(date, time) + timedelta(hours=2)).time(),
+            reservations__canceled=False
+        ).values_list('id', flat=True)
+        
+        return JsonResponse({
+            'occupied_tables': list(occupied_tables)
+        })
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Invalid date or time format'}, status=400)

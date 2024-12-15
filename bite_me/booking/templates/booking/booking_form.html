@@ -1,107 +1,109 @@
 <!-- booking/templates/booking/booking_form.html -->
 {% extends 'booking/base.html' %}
 {% load static %}
-{% load widget_tweaks %}
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h3 class="mb-0 fw-bold">
-                        <i class="bi bi-calendar-plus"></i> Book a Table
-                    </h3>
-                    <p class="card-text mt-2 mb-0">Reserve your dining experience</p>
-                </div>
-                <div class="card-body p-4 p-md-5">
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {% for error in form.non_field_errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-1">Book a Table</h2>
+            <p class="text-muted mb-0">Select your preferred date, time, and table</p>
+        </div>
+    </div>
 
-                    <form method="POST" class="needs-validation" novalidate>
+    <div class="row">
+        <!-- Booking Form -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation" novalidate id="bookingForm">
                         {% csrf_token %}
-                        
                         <!-- Date field -->
-                        <div class="mb-4">
-                            <label for="{{ form.date.id_for_label }}" class="form-label">
-                                <i class="bi bi-calendar-date"></i> Date
-                            </label>
-                            {% render_field form.date class="form-control form-control-lg" %}
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            {{ form.date }}
                             {% if form.date.errors %}
                                 <div class="invalid-feedback d-block">
                                     {{ form.date.errors|join:", " }}
                                 </div>
                             {% endif %}
-                            <small class="form-text text-muted">
-                                Reservations can be made up to 30 days in advance
-                            </small>
                         </div>
 
                         <!-- Time field -->
-                        <div class="mb-4">
-                            <label for="{{ form.time.id_for_label }}" class="form-label">
-                                <i class="bi bi-clock"></i> Time
-                            </label>
-                            {% render_field form.time class="form-control form-control-lg" %}
+                        <div class="mb-3">
+                            <label class="form-label">Time</label>
+                            {{ form.time }}
                             {% if form.time.errors %}
                                 <div class="invalid-feedback d-block">
                                     {{ form.time.errors|join:", " }}
                                 </div>
                             {% endif %}
-                            <small class="form-text text-muted">
-                                We accept reservations between 11:00 AM and 10:00 PM
-                            </small>
                         </div>
 
-                        <!-- Number of Guests field -->
-                        <div class="mb-4">
-                            <label for="{{ form.guests.id_for_label }}" class="form-label">
-                                <i class="bi bi-people"></i> Number of Guests
-                            </label>
-                            {% render_field form.guests class="form-control form-control-lg" min="1" max="20" %}
+                        <!-- Guests field -->
+                        <div class="mb-3">
+                            <label class="form-label">Number of Guests</label>
+                            {{ form.guests }}
                             {% if form.guests.errors %}
                                 <div class="invalid-feedback d-block">
                                     {{ form.guests.errors|join:", " }}
                                 </div>
                             {% endif %}
-                            <small class="form-text text-muted">
-                                For parties larger than 20, please contact us directly
-                            </small>
                         </div>
 
-                        <!-- Special Notes (Optional) -->
-                        <div class="mb-4">
-                            <label for="special_notes" class="form-label">
-                                <i class="bi bi-pencil"></i> Special Notes (Optional)
-                            </label>
-                            <textarea class="form-control" id="special_notes" rows="3" 
-                                    placeholder="Any dietary requirements or special requests?"></textarea>
-                        </div>
+                        <!-- Selected Tables (Hidden) -->
+                        <div id="selectedTablesContainer"></div>
 
-                        <!-- Submit button -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle"></i> Confirm Reservation
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                Confirm Reservation
                             </button>
                         </div>
                     </form>
                 </div>
-                <div class="card-footer bg-light p-4">
-                    <div class="row text-center">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <i class="bi bi-telephone fs-4 text-primary"></i>
-                            <p class="mb-0 mt-2">Need help?</p>
-                            <p class="mb-0"><strong>Call us: (123) 456-7890</strong></p>
+            </div>
+        </div>
+
+        <!-- Table Layout -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-grid text-primary me-2"></i>
+                        Select Your Table
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Legend -->
+                    <div class="layout-legend mb-4">
+                        <div class="d-flex flex-wrap gap-4">
+                            <div class="d-flex align-items-center">
+                                <div class="table-indicator available"></div>
+                                <span class="ms-2">Available</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="table-indicator occupied"></div>
+                                <span class="ms-2">Occupied</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="table-indicator selected"></div>
+                                <span class="ms-2">Selected</span>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <i class="bi bi-clock fs-4 text-primary"></i>
-                            <p class="mb-0 mt-2">Opening Hours</p>
-                            <p class="mb-0"><strong>11:00 AM - 10:00 PM</strong></p>
-                        </div>
+                    </div>
+
+                    <!-- Tables Grid -->
+                    <div class="tables-grid">
+                        {% for table in tables %}
+                            <div class="table-item {% if table in occupied_tables %}occupied{% else %}available{% endif %}"
+                                 data-table-id="{{ table.id }}"
+                                 data-capacity="{{ table.capacity }}"
+                                 onclick="toggleTableSelection(this)">
+                                <div class="table-number">{{ table.number }}</div>
+                                <div class="table-capacity">{{ table.capacity }}p</div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -111,43 +113,183 @@
 
 <!-- Add custom styles -->
 <style>
-.card {
-    border: none;
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+.table-indicator {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
 }
 
-.form-control, .form-select {
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid #dee2e6;
+.table-indicator.available {
+    background-color: #e7f1ff;
+    border: 2px solid #0d6efd;
 }
 
-.form-control:focus, .form-select:focus {
+.table-indicator.occupied {
+    background-color: #fee2e2;
+    border: 2px solid #dc3545;
+}
+
+.table-indicator.selected {
+    background-color: #d1fae5;
+    border: 2px solid #10b981;
+}
+
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+}
+
+.table-item {
+    aspect-ratio: 1;
+    border: 2px solid;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.table-item:hover:not(.occupied) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-item.available {
+    background-color: #e7f1ff;
     border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
 }
 
-.btn {
-    border-radius: 0.5rem;
-    padding: 0.75rem 1.5rem;
+.table-item.occupied {
+    background-color: #fee2e2;
+    border-color: #dc3545;
+    cursor: not-allowed;
 }
 
-.invalid-feedback {
+.table-item.selected {
+    background-color: #d1fae5;
+    border-color: #10b981;
+}
+
+.table-number {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.table-capacity {
     font-size: 0.875rem;
-}
-
-.form-text {
-    font-size: 0.875rem;
-}
-
-.card-footer {
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-@media (max-width: 768px) {
-    .card-body {
-        padding: 1.5rem !important;
-    }
+    color: #6c757d;
 }
 </style>
+
+<!-- Add custom scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize form validation
+    const form = document.getElementById('bookingForm');
+    form.addEventListener('submit', function(event) {
+        if (!validateForm()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Initialize date/time change handlers
+    const dateInput = document.querySelector('input[name="date"]');
+    const timeInput = document.querySelector('input[name="time"]');
+    
+    dateInput.addEventListener('change', updateTableAvailability);
+    timeInput.addEventListener('change', updateTableAvailability);
+});
+
+function toggleTableSelection(tableElement) {
+    if (tableElement.classList.contains('occupied')) return;
+    
+    const guestsInput = document.querySelector('input[name="guests"]');
+    const guests = parseInt(guestsInput.value) || 0;
+    const selectedTables = document.querySelectorAll('.table-item.selected');
+    
+    if (tableElement.classList.contains('selected')) {
+        tableElement.classList.remove('selected');
+    } else {
+        // Calculate total capacity
+        let totalCapacity = Array.from(selectedTables).reduce((sum, table) => 
+            sum + parseInt(table.dataset.capacity), 0);
+        totalCapacity += parseInt(tableElement.dataset.capacity);
+        
+        if (totalCapacity >= guests) {
+            tableElement.classList.add('selected');
+        } else {
+            alert('Selected tables do not have enough capacity for your party size.');
+        }
+    }
+    
+    updateSelectedTablesInput();
+}
+
+function updateSelectedTablesInput() {
+    const selectedTables = document.querySelectorAll('.table-item.selected');
+    const container = document.getElementById('selectedTablesContainer');
+    
+    // Clear existing inputs
+    container.innerHTML = '';
+    
+    // Add new inputs for selected tables
+    selectedTables.forEach(table => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'selected_tables';
+        input.value = table.dataset.tableId;
+        container.appendChild(input);
+    });
+}
+
+function updateTableAvailability() {
+    const date = document.querySelector('input[name="date"]').value;
+    const time = document.querySelector('input[name="time"]').value;
+    
+    if (date && time) {
+        fetch(`/check-availability/?date=${date}&time=${time}`)
+            .then(response => response.json())
+            .then(data => {
+                document.querySelectorAll('.table-item').forEach(table => {
+                    if (data.occupied_tables.includes(parseInt(table.dataset.tableId))) {
+                        table.classList.remove('available', 'selected');
+                        table.classList.add('occupied');
+                    } else {
+                        table.classList.remove('occupied', 'selected');
+                        table.classList.add('available');
+                    }
+                });
+                updateSelectedTablesInput();
+            });
+    }
+}
+
+function validateForm() {
+    const guests = parseInt(document.querySelector('input[name="guests"]').value) || 0;
+    const selectedTables = document.querySelectorAll('.table-item.selected');
+    
+    if (selectedTables.length === 0) {
+        alert('Please select at least one table.');
+        return false;
+    }
+    
+    const totalCapacity = Array.from(selectedTables).reduce((sum, table) => 
+        sum + parseInt(table.dataset.capacity), 0);
+    
+    if (totalCapacity < guests) {
+        alert('Selected tables do not have enough capacity for your party size.');
+        return false;
+    }
+    
+    return true;
+}
+</script>
 {% endblock %}

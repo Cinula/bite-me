@@ -5,8 +5,11 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 class Table(models.Model):
-    number = models.CharField(max_length=5, unique=True)
+    number = models.CharField(max_length=10)
     capacity = models.IntegerField()
+
+    class Meta:
+        ordering = ['number']
 
     def __str__(self):
         return f"Table {self.number} (Capacity: {self.capacity})"
