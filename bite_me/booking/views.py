@@ -54,12 +54,11 @@ def logout_view(request):
     return redirect('index')
 
 
-@login_required
 def menu_view(request):
     """Display the restaurant's menu."""
     from menu.models import Category
     categories = Category.objects.prefetch_related('items').all()
-    return render(request, 'booking/menu.html', {'categories': categories})
+    return render(request, 'menu/menu.html', {'categories': categories})
 
 
 @login_required

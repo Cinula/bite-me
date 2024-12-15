@@ -12,3 +12,31 @@ $(document).ready(function () {
         });
     });
 });
+
+// Menu search functionality
+document.addEventListener('DOMContentLoaded', function () {
+    const searchForm = document.getElementById('menuSearchForm');
+    const searchInput = document.getElementById('menuSearch');
+
+    if (searchForm && searchInput) {
+        searchInput.addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const menuItems = document.querySelectorAll('.menu-item-card');
+
+            menuItems.forEach(item => {
+                const title = item.querySelector('.card-title').textContent.toLowerCase();
+                const description = item.querySelector('.card-text').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        searchForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+        });
+    }
+});

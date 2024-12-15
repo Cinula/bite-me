@@ -23,6 +23,7 @@ h6 {
 .card-img-top {
     height: 200px;
     object-fit: cover;
+    width: 100%;
     transition: transform 0.3s ease;
 }
 
@@ -65,5 +66,34 @@ h6 {
 @media (max-width: 768px) {
     .card-img-top {
         height: 150px;
+    }
+}
+
+/* Menu page styling */
+.menu-item-card .card {
+    transition: transform 0.2s ease-in-out;
+    overflow: hidden;
+}
+
+.menu-item-card .card:hover {
+    transform: translateY(-5px);
+}
+
+.menu-item-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.category-section {
+    scroll-margin-top: 2rem;
+}
+
+#menuSearch {
+    min-width: 300px;
+}
+
+@media (max-width: 768px) {
+    #menuSearch {
+        min-width: 100%;
     }
 }
