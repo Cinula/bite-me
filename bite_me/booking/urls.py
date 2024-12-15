@@ -7,7 +7,8 @@ from .views import (
     booking_detail_view, cancel_reservation_view, dashboard_view,
     modify_reservation_view, profile_view, delete_account_view,
     admin_reservations_view, admin_update_reservation_status,
-    admin_tables_view, edit_table_view, check_availability_view
+    admin_tables_view, edit_table_view, check_availability_view,
+    contact_view
 )
 
 urlpatterns = [
@@ -29,4 +30,5 @@ urlpatterns = [
     path('manage/tables/', admin_tables_view, name='admin_tables'),
     path('manage/table/<int:pk>/edit/', edit_table_view, name='edit_table'),
     path('check-availability/', check_availability_view, name='check_availability'),
+    path('contact/', contact_view, name='contact'),
 ]

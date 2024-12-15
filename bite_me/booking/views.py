@@ -475,3 +475,18 @@ def check_availability_view(request):
         })
     except (ValueError, TypeError):
         return JsonResponse({'error': 'Invalid date or time format'}, status=400)
+
+def contact_view(request):
+    """Handle contact form submissions."""
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        # Here you would typically send an email or save to database
+        # For now, just show a success message
+        messages.success(request, 'Thank you for your message. We will get back to you soon!')
+        return redirect('contact')
+    
+    return render(request, 'booking/contact.html')

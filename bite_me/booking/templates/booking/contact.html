@@ -1,0 +1,182 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h2 class="display-4 fw-bold mb-3">Contact Us</h2>
+            <p class="text-muted lead">Get in touch with us for any inquiries</p>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact Information -->
+        <div class="col-lg-4">
+            <div class="contact-info">
+                <!-- Location -->
+                <div class="contact-item mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="contact-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <h5 class="mb-0 ms-3">Location</h5>
+                    </div>
+                    <p class="text-muted mb-0">123 Restaurant Street</p>
+                    <p class="text-muted mb-0">London, UK 10001</p>
+                </div>
+
+                <!-- Opening Hours -->
+                <div class="contact-item mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="contact-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <h5 class="mb-0 ms-3">Opening Hours</h5>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted mb-2">
+                        <span>Monday - Friday</span>
+                        <span>8:00 AM - 11:00 PM</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted mb-2">
+                        <span>Saturday</span>
+                        <span>9:00 AM - 11:30 PM</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted">
+                        <span>Sunday</span>
+                        <span>10:00 AM - 10:00 PM</span>
+                    </div>
+                </div>
+
+                <!-- Contact Details -->
+                <div class="contact-item">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="contact-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-envelope"></i>
+                        </div>
+                        <h5 class="mb-0 ms-3">Contact Details</h5>
+                    </div>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-telephone me-2"></i>+1 234 567 890
+                    </p>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-envelope me-2"></i>info@biteme.com
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                                <div class="invalid-feedback">Please provide your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" name="email" required>
+                                <div class="invalid-feedback">Please provide a valid email.</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Subject</label>
+                                <input type="text" class="form-control" name="subject" required>
+                                <div class="invalid-feedback">Please provide a subject.</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" name="message" rows="5" required></textarea>
+                                <div class="invalid-feedback">Please write your message.</div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="map-container">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.542352678945!2d-0.12985968422955556!3d51.50735067963576!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604ce3941eb1f%3A0x1a5342fdf089c627!2sTrafalgar%20Square!5e0!3m2!1sen!2suk!4v1647007510000!5m2!1sen!2suk" 
+                    width="100%" 
+                    height="450" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.contact-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.contact-item {
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.map-container {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #0d6efd;
+}
+
+@media (max-width: 768px) {
+    .contact-item {
+        padding: 1rem;
+    }
+}
+</style>
+
+<!-- Add form validation script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %} 
