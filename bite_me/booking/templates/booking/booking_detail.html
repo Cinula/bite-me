@@ -1,16 +1,378 @@
 <!-- booking/templates/booking/booking_detail.html -->
 {% extends 'booking/base.html' %}
+{% load static %}
 {% block content %}
-<h2>Reservation Details</h2>
-<div class="card p-3">
-    <p><strong>Date:</strong> {{ reservation.date }}</p>
-    <p><strong>Time:</strong> {{ reservation.time }}</p>
-    <p><strong>Guests:</strong> {{ reservation.guests }}</p>
-    <p><strong>Tables:</strong>
-        {% for table in reservation.tables.all %}
-            {{ table.number }} (Capacity: {{ table.capacity }}){% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </p>
-    <a href="{% url 'my_bookings' %}" class="btn btn-secondary">Back to Bookings</a>
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'my_bookings' %}" class="text-decoration-none">
+                            <i class="bi bi-arrow-left"></i> Back to Bookings
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Reservation Details</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Reservation Details -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="reservation-status-badge me-3 
+                            {% if reservation.canceled %}bg-danger
+                            {% elif reservation.date < today %}bg-secondary
+                            {% else %}bg-success{% endif %}">
+                            <i class="bi 
+                                {% if reservation.canceled %}bi-x-circle
+                                {% elif reservation.date < today %}bi-check-circle
+                                {% else %}bi-calendar-check{% endif %}">
+                            </i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">Reservation #{{ reservation.id }}</h4>
+                            <p class="text-muted mb-0">
+                                {% if reservation.canceled %}
+                                    Cancelled
+                                {% elif reservation.date < today %}
+                                    Completed
+                                {% else %}
+                                    Confirmed
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Date & Time -->
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-calendar-date text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="detail-title">Date & Time</h6>
+                                    <p class="detail-value">
+                                        {{ reservation.date|date:"l, F j, Y" }}<br>
+                                        {{ reservation.time|time:"g:i A" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Party Size -->
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-people text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="detail-title">Party Size</h6>
+                                    <p class="detail-value">
+                                        {{ reservation.guests }} {% if reservation.guests == 1 %}Person{% else %}People{% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Table Assignment -->
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-grid text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="detail-title">Table Assignment</h6>
+                                    <p class="detail-value">
+                                        {% for table in reservation.tables.all %}
+                                            Table {{ table.number }}{% if not forloop.last %}, {% endif %}
+                                        {% empty %}
+                                            To be assigned
+                                        {% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Booking Time -->
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-clock-history text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="detail-title">Booking Made</h6>
+                                    <p class="detail-value">{{ reservation.created_at|date:"F j, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurant Policies -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        Restaurant Policies
+                    </h5>
+                    <div class="policy-list">
+                        <div class="policy-item">
+                            <i class="bi bi-clock"></i>
+                            <p>Please arrive 10 minutes before your reservation time</p>
+                        </div>
+                        <div class="policy-item">
+                            <i class="bi bi-hourglass-split"></i>
+                            <p>Tables are held for 15 minutes after reservation time</p>
+                        </div>
+                        <div class="policy-item">
+                            <i class="bi bi-person-x"></i>
+                            <p>Cancellations must be made at least 2 hours in advance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">Actions</h5>
+                    {% if not reservation.canceled and reservation.date >= today %}
+                        <div class="d-grid gap-2">
+                            <a href="#" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                <i class="bi bi-x-circle"></i> Cancel Reservation
+                            </a>
+                            <a href="{% url 'modify_reservation' reservation.pk %}" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Modify Reservation
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Restaurant Contact -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">Need Help?</h5>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="bi bi-telephone"></i>
+                            <p>(123) 456-7890</p>
+                        </div>
+                        <div class="contact-item">
+                            <i class="bi bi-envelope"></i>
+                            <p>support@biteme.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.reservation-status-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reservation-status-badge i {
+    font-size: 24px;
+    color: white;
+}
+
+.detail-card {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    height: 100%;
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: #e7f1ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-wrapper i {
+    font-size: 1.25rem;
+}
+
+.detail-title {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.policy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.policy-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.policy-item i {
+    font-size: 1.25rem;
+    color: #0d6efd;
+}
+
+.policy-item p {
+    margin-bottom: 0;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.contact-item i {
+    font-size: 1.25rem;
+    color: #0d6efd;
+}
+
+.contact-item p {
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    font-family: "Bootstrap Icons";
+    content: "\F285";
+}
+
+@media (max-width: 768px) {
+    .detail-card {
+        padding: 0.75rem;
+    }
+    
+    .icon-wrapper {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .detail-value {
+        font-size: 0.875rem;
+    }
+}
+
+.cancel-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background-color: #fee2e2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.cancel-icon-wrapper i {
+    font-size: 40px;
+    color: #dc3545;
+}
+
+.reservation-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.modal-content {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.modal .btn {
+    padding: 0.75rem 1.5rem;
+}
+
+.alert {
+    border-radius: 0.5rem;
+}
+</style>
+
+<!-- Cancellation Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header border-0 bg-danger text-white">
+                <h5 class="modal-title" id="cancelModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Cancel Reservation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-4">
+                    <div class="cancel-icon-wrapper mb-3">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+                    <h4>Are you sure?</h4>
+                    <p class="text-muted mb-0">
+                        You are about to cancel your reservation for:
+                    </p>
+                    <div class="reservation-details mt-3">
+                        <p class="fw-bold mb-1">{{ reservation.date|date:"l, F j, Y" }}</p>
+                        <p class="mb-1">{{ reservation.time|time:"g:i A" }}</p>
+                        <p class="mb-0">{{ reservation.guests }} {% if reservation.guests == 1 %}person{% else %}people{% endif %}</p>
+                    </div>
+                </div>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle me-2"></i>
+                    This action cannot be undone.
+                </div>
+                <form method="POST" action="{% url 'cancel_reservation' reservation.pk %}">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-x-circle me-2"></i>Yes, Cancel Reservation
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            No, Keep Reservation
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

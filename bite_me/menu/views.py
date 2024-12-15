@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from .models import MenuItem, Category
@@ -45,3 +45,31 @@ def menu_edit_view(request):
         'items': items
     }
     return render(request, 'menu/menu_edit.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def edit_menu_item(request, pk):
+    """Handle menu item editing."""
+    item = get_object_or_404(MenuItem, pk=pk)
+    
+    if request.method == 'POST':
+        form = MenuItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'"{item.name}" has been updated successfully.')
+            return redirect('menu_edit')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    
+    return redirect('menu_edit')
+
+@user_passes_test(lambda u: u.is_staff)
+def delete_menu_item(request, pk):
+    """Handle menu item deletion."""
+    item = get_object_or_404(MenuItem, pk=pk)
+    
+    if request.method == 'POST':
+        item_name = item.name
+        item.delete()
+        messages.success(request, f'"{item_name}" has been deleted successfully.')
+    
+    return redirect('menu_edit')

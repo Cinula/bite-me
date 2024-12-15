@@ -1,0 +1,125 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'booking_detail' reservation.pk %}" class="text-decoration-none">
+                            <i class="bi bi-arrow-left"></i> Back to Reservation
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Modify Reservation</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-pencil-square"></i> Modify Reservation
+                    </h3>
+                    <p class="card-text mt-2 mb-0">Update your reservation details</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Date field -->
+                        <div class="mb-4">
+                            <label for="{{ form.date.id_for_label }}" class="form-label">
+                                <i class="bi bi-calendar-date"></i> Date
+                            </label>
+                            {% render_field form.date class="form-control form-control-lg" %}
+                            {% if form.date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Reservations can be made up to 30 days in advance
+                            </small>
+                        </div>
+
+                        <!-- Time field -->
+                        <div class="mb-4">
+                            <label for="{{ form.time.id_for_label }}" class="form-label">
+                                <i class="bi bi-clock"></i> Time
+                            </label>
+                            {% render_field form.time class="form-control form-control-lg" %}
+                            {% if form.time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.time.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                We accept reservations between 11:00 AM and 10:00 PM
+                            </small>
+                        </div>
+
+                        <!-- Number of Guests field -->
+                        <div class="mb-4">
+                            <label for="{{ form.guests.id_for_label }}" class="form-label">
+                                <i class="bi bi-people"></i> Number of Guests
+                            </label>
+                            {% render_field form.guests class="form-control form-control-lg" min="1" max="20" %}
+                            {% if form.guests.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.guests.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                For parties larger than 20, please contact us directly
+                            </small>
+                        </div>
+
+                        <!-- Submit buttons -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'booking_detail' reservation.pk %}" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Update Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.form-control {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+.form-text {
+    font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+</style>
+{% endblock %} 

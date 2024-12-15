@@ -86,27 +86,43 @@ def create_reservation_view(request):
 @login_required
 def my_bookings_view(request):
     """Display user's current bookings."""
-    reservations = request.user.reservations.filter(canceled=False).order_by('-date', '-time')
-    return render(request, 'booking/bookings_list.html', {'reservations': reservations})
+    reservations = request.user.reservations.all().order_by('-date', '-time')
+    context = {
+        'reservations': reservations,
+        'today': datetime.now().date()
+    }
+    return render(request, 'booking/bookings_list.html', context)
 
 
 @login_required
 def booking_detail_view(request, pk):
     """Display details of a specific reservation."""
     reservation = get_object_or_404(Reservation, pk=pk, user=request.user)
-    return render(request, 'booking/booking_detail.html', {'reservation': reservation})
+    context = {
+        'reservation': reservation,
+        'today': datetime.now().date()
+    }
+    return render(request, 'booking/booking_detail.html', context)
 
 
 @login_required
 def cancel_reservation_view(request, pk):
     """Allow users to cancel a reservation."""
     reservation = get_object_or_404(Reservation, pk=pk, user=request.user)
+    
+    # Don't allow cancellation of past reservations
+    if reservation.date < datetime.now().date():
+        messages.error(request, "Past reservations cannot be cancelled.")
+        return redirect('booking_detail', pk=pk)
+    
     if request.method == 'POST':
         reservation.canceled = True
         reservation.save()
-        messages.success(request, "Reservation canceled successfully.")
+        messages.success(request, "Your reservation has been cancelled successfully.")
         return redirect('my_bookings')
-    return render(request, 'booking/cancellation.html', {'reservation': reservation})
+    
+    # If it's not a POST request, redirect back to the detail page
+    return redirect('booking_detail', pk=pk)
 
 
 @login_required
@@ -130,6 +146,42 @@ def dashboard_view(request):
         'user': request.user,
     }
     return render(request, 'booking/dashboard.html', context)
+
+
+@login_required
+def modify_reservation_view(request, pk):
+    """Allow users to modify their reservation."""
+    reservation = get_object_or_404(Reservation, pk=pk, user=request.user)
+    
+    # Don't allow modification of past or cancelled reservations
+    if reservation.date < datetime.now().date() or reservation.canceled:
+        messages.error(request, "This reservation cannot be modified.")
+        return redirect('booking_detail', pk=pk)
+    
+    if request.method == 'POST':
+        form = ReservationForm(request.POST, instance=reservation)
+        if form.is_valid():
+            new_reservation = form.save(commit=False)
+            if check_availability(new_reservation.date, new_reservation.time, new_reservation.guests):
+                # Clear existing table assignments
+                reservation.tables.clear()
+                new_reservation.save()
+                # Allocate new tables
+                allocate_tables(new_reservation)
+                messages.success(request, "Reservation updated successfully!")
+                return redirect('booking_detail', pk=pk)
+            else:
+                messages.error(request, "Not enough tables available at the selected time.")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ReservationForm(instance=reservation)
+    
+    context = {
+        'form': form,
+        'reservation': reservation,
+    }
+    return render(request, 'booking/modify_reservation.html', context)
 
 
 # Helper functions
