@@ -1,19 +1,33 @@
 /* booking/static/css/style.css */
 
+/* General Styles */
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background-color: #f8f9fa;
 }
 
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+}
+
+/* Navbar Styles */
 .navbar-brand img {
     margin-right: 10px;
 }
 
-h1,
-h2,
-h3,
-h4 {
-    font-weight: 600;
+/* Card Styles */
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
 }
 
 .card-title {
@@ -21,22 +35,35 @@ h4 {
     font-weight: bold;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+.card-text {
+    font-size: 0.95rem;
+    color: #555;
 }
 
-.btn-outline-secondary {
-    color: #6c757d;
-    border-color: #6c757d;
+/* Category Header Styles */
+.category-section h3 {
+    border-bottom: 2px solid #007bff;
+    display: inline-block;
+    padding-bottom: 5px;
 }
 
-.alert {
-    position: relative;
+/* Hover Effects for Cards */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
-.alert .btn-close {
-    position: absolute;
-    top: 0.75rem;
-    right: 1rem;
+/* Modal Image Styles */
+.modal-body img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 150px;
+    }
 }

@@ -1,0 +1,66 @@
+<!-- menu/templates/menu/menu.html -->
+{% extends 'booking/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <!-- Menu Header with Search -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="mb-0">Our Menu</h2>
+        <form class="d-flex" id="menuSearchForm">
+            <input class="form-control me-2" type="search" placeholder="Search for dishes..." aria-label="Search" id="menuSearch">
+        </form>
+    </div>
+
+    {% for category in categories %}
+        <div class="category-section mb-5">
+            <h3 class="mb-4">{{ category.name }}</h3>
+            <div class="row g-4">
+                {% for item in category.items.all %}
+                    <div class="col-md-6 col-lg-4 menu-item-card">
+                        <div class="card h-100 shadow-sm">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" loading="lazy">
+                            {% else %}
+                                <img src="{% static 'img/default-menu-item.jpg' %}" class="card-img-top" alt="{{ item.name }}" loading="lazy">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ item.name }}</h5>
+                                <p class="card-text flex-grow-1">{{ item.description|truncatewords:20 }}</p>
+                                <div class="mt-3 d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">${{ item.price }}</span>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ item.id }}">
+                                        Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Structure -->
+                    <div class="modal fade" id="modal{{ item.id }}" tabindex="-1" aria-labelledby="modalLabel{{ item.id }}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel{{ item.id }}">{{ item.name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" class="img-fluid mb-3" alt="{{ item.name }}" loading="lazy">
+                            {% endif %}
+                            <p>{{ item.description }}</p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">No menu items available at the moment. Please check back later!</div>
+    {% endfor %}
+</div>
+{% endblock %}

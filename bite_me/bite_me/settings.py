@@ -96,3 +96,6 @@ MESSAGE_TAGS = {
     message_constants.WARNING: 'alert alert-warning',
     message_constants.ERROR: 'alert alert-danger',
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
