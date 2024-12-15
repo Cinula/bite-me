@@ -144,7 +144,7 @@
                         </tr>
 
                         <!-- Details Modal -->
-                        <div class="modal fade" id="detailsModal{{ reservation.id }}" tabindex="-1">
+                        <div class="modal fade" id="detailsModal{{ reservation.id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border-0">
                                     <div class="modal-header border-0">
@@ -152,7 +152,7 @@
                                             <i class="bi bi-info-circle text-primary me-2"></i>
                                             Reservation Details
                                         </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body px-4 py-0">
                                         <div class="py-3 border-bottom">
@@ -325,5 +325,16 @@ function confirmRestore(id) {
         form.submit();
     }
 }
+
+// Initialize modals
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        new bootstrap.Modal(modal, {
+            backdrop: 'static'
+        });
+    });
+});
 </script>
+{% csrf_token %}
 {% endblock %} 

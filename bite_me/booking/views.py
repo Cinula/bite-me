@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 
 from .forms import RegistrationForm, ReservationForm, UserProfileForm
 from .models import Reservation, Table
@@ -357,5 +358,5 @@ def admin_update_reservation_status(request, pk):
             reservation.canceled = False
             reservation.save()
             messages.success(request, f'Reservation #{pk} has been restored.')
-        
+    
     return redirect('admin_reservations')
