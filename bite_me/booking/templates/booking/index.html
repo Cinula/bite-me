@@ -2,53 +2,233 @@
 {% extends 'booking/base.html' %}
 {% load static %}
 {% block content %}
-<!-- Hero Section -->
-<div class="row align-items-center g-5 py-5">
-  <div class="col-lg-6">
-    <h1 class="display-4 fw-bold mb-3">Welcome to Bite Me</h1>
-    <p class="lead">Experience the finest cuisine in a luxurious ambience. Book your table online and delight in a culinary journey.</p>
-    <a href="{% url 'book' %}" class="btn btn-primary btn-lg mt-3">Reserve Your Table</a>
-    <a href="{% url 'menu' %}" class="btn btn-outline-secondary btn-lg mt-3 ms-2">View Our Menu</a>
-  </div>
-  <div class="col-lg-6">
-    <img src="{% static 'img/restaurant-interior.jpg' %}" class="img-fluid rounded" alt="Restaurant Interior">
-  </div>
+<!-- Hero Section with Slider -->
+<div id="heroSlider" class="carousel slide" data-bs-ride="carousel">
+    <!-- Indicators -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroSlider" data-bs-slide-to="2"></button>
+    </div>
+
+    <!-- Slides -->
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <div class="hero-slide" style="background-image: url('{% static 'img/hero-1.jpg' %}');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-white mb-4">Welcome to Bite Me</h1>
+                    <p class="lead text-white mb-4">Experience the finest dining in a cozy atmosphere</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'book' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-calendar-plus me-2"></i>Book a Table
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <div class="hero-slide" style="background-image: url('{% static 'img/hero-2.jpg' %}');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-white mb-4">Exquisite Cuisine</h1>
+                    <p class="lead text-white mb-4">Discover our chef's special creations</p>
+                    <a href="{% url 'menu' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-journal-text me-2"></i>View Menu
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-item">
+            <div class="hero-slide" style="background-image: url('{% static 'img/hero-3.jpg' %}');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-white mb-4">Perfect Ambiance</h1>
+                    <p class="lead text-white mb-4">Create memorable moments with us</p>
+                    <a href="{% url 'book' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-calendar-plus me-2"></i>Reserve Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroSlider" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </div>
 
-<!-- About Section -->
-<div class="row py-5">
-  <div class="col-md-6">
-    <img src="{% static 'img/chef.jpg' %}" class="img-fluid rounded" alt="Chef">
-  </div>
-  <div class="col-md-6 d-flex flex-column justify-content-center">
-    <h2 class="fw-bold">Our Story</h2>
-    <p>At Bite Me, we craft flavors that inspire. Our team of world-class chefs sources the freshest ingredients and creates a seasonal menu that pleases every palate. Join us for a dining experience that blends elegance, comfort, and exceptional cuisine.</p>
-  </div>
+<!-- Rest of the content wrapped in container -->
+<div class="container">
+    <!-- About Section -->
+    <div class="row py-5">
+        <div class="col-md-6">
+            <img src="{% static 'img/chef.jpg' %}" class="img-fluid rounded" alt="Chef">
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h2 class="fw-bold">Our Story</h2>
+            <p>At Bite Me, we craft flavors that inspire. Our team of world-class chefs sources the freshest ingredients and creates a seasonal menu that pleases every palate. Join us for a dining experience that blends elegance, comfort, and exceptional cuisine.</p>
+        </div>
+    </div>
+
+    <!-- Highlights Section -->
+    <div class="row py-5 text-center">
+        <h2 class="fw-bold mb-4">Why Dine With Us?</h2>
+        <div class="col-md-4">
+            <div class="p-4">
+                <img src="{% static 'img/icon-fresh-ingredients.png' %}" height="60" alt="Fresh Ingredients">
+                <h4 class="mt-3">Fresh Ingredients</h4>
+                <p>Only the freshest, locally sourced ingredients.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <img src="{% static 'img/icon-chef-hat.png' %}" height="60" alt="Expert Chefs">
+                <h4 class="mt-3">Expert Chefs</h4>
+                <p>Our culinary team brings years of experience and creativity.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <img src="{% static 'img/icon-ambience.png' %}" height="60" alt="Luxurious Ambience">
+                <h4 class="mt-3">Luxurious Ambience</h4>
+                <p>Dine in a refined setting that balances modern luxury.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Highlights Section -->
-<div class="row py-5 text-center">
-  <h2 class="fw-bold mb-4">Why Dine With Us?</h2>
-  <div class="col-md-4">
-    <div class="p-4">
-      <img src="{% static 'img/icon-fresh-ingredients.png' %}" height="60" alt="Fresh Ingredients">
-      <h4 class="mt-3">Fresh Ingredients</h4>
-      <p>Only the freshest, locally sourced ingredients.</p>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="p-4">
-      <img src="{% static 'img/icon-chef-hat.png' %}" height="60" alt="Expert Chefs">
-      <h4 class="mt-3">Expert Chefs</h4>
-      <p>Our culinary team brings years of experience and creativity.</p>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="p-4">
-      <img src="{% static 'img/icon-ambience.png' %}" height="60" alt="Luxurious Ambience">
-      <h4 class="mt-3">Luxurious Ambience</h4>
-      <p>Dine in a refined setting that balances modern luxury.</p>
-    </div>
-  </div>
-</div>
+<!-- Update the styles -->
+<style>
+#heroSlider {
+    margin-top: -1.5rem;
+    margin-bottom: 3rem;
+    width: 100%;
+}
+
+.hero-slide {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.carousel-indicators {
+    margin-bottom: 3rem;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 6px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+}
+
+.carousel-indicators button.active {
+    background-color: #fff;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carousel:hover .carousel-control-prev,
+.carousel:hover .carousel-control-next {
+    opacity: 1;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 3rem;
+    height: 3rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    background-size: 50%;
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .hero-slide {
+        height: 80vh;
+    }
+
+    .hero-content {
+        padding: 1.5rem;
+        max-width: 100%;
+    }
+
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .lead {
+        font-size: 1.1rem;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+</style>
+
+<!-- Add custom script for auto-play -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the carousel with options
+    const heroSlider = new bootstrap.Carousel(document.getElementById('heroSlider'), {
+        interval: 5000,  // Change slides every 5 seconds
+        pause: 'hover',  // Pause on mouse hover
+        wrap: true       // Continuous loop
+    });
+});
+</script>
 {% endblock %}
