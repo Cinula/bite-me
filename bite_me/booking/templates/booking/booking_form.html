@@ -1,11 +1,153 @@
 <!-- booking/templates/booking/booking_form.html -->
 {% extends 'booking/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
 {% block content %}
-<h2>Book a Table</h2>
-<p>Select your preferred date, time, and number of guests.</p>
-<form method="POST" class="col-md-6">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Reserve</button>
-</form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-calendar-plus"></i> Book a Table
+                    </h3>
+                    <p class="card-text mt-2 mb-0">Reserve your dining experience</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Date field -->
+                        <div class="mb-4">
+                            <label for="{{ form.date.id_for_label }}" class="form-label">
+                                <i class="bi bi-calendar-date"></i> Date
+                            </label>
+                            {% render_field form.date class="form-control form-control-lg" %}
+                            {% if form.date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Reservations can be made up to 30 days in advance
+                            </small>
+                        </div>
+
+                        <!-- Time field -->
+                        <div class="mb-4">
+                            <label for="{{ form.time.id_for_label }}" class="form-label">
+                                <i class="bi bi-clock"></i> Time
+                            </label>
+                            {% render_field form.time class="form-control form-control-lg" %}
+                            {% if form.time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.time.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                We accept reservations between 11:00 AM and 10:00 PM
+                            </small>
+                        </div>
+
+                        <!-- Number of Guests field -->
+                        <div class="mb-4">
+                            <label for="{{ form.guests.id_for_label }}" class="form-label">
+                                <i class="bi bi-people"></i> Number of Guests
+                            </label>
+                            {% render_field form.guests class="form-control form-control-lg" min="1" max="20" %}
+                            {% if form.guests.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.guests.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                For parties larger than 20, please contact us directly
+                            </small>
+                        </div>
+
+                        <!-- Special Notes (Optional) -->
+                        <div class="mb-4">
+                            <label for="special_notes" class="form-label">
+                                <i class="bi bi-pencil"></i> Special Notes (Optional)
+                            </label>
+                            <textarea class="form-control" id="special_notes" rows="3" 
+                                    placeholder="Any dietary requirements or special requests?"></textarea>
+                        </div>
+
+                        <!-- Submit button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirm Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light p-4">
+                    <div class="row text-center">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <i class="bi bi-telephone fs-4 text-primary"></i>
+                            <p class="mb-0 mt-2">Need help?</p>
+                            <p class="mb-0"><strong>Call us: (123) 456-7890</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <i class="bi bi-clock fs-4 text-primary"></i>
+                            <p class="mb-0 mt-2">Opening Hours</p>
+                            <p class="mb-0"><strong>11:00 AM - 10:00 PM</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles -->
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.btn {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+.form-text {
+    font-size: 0.875rem;
+}
+
+.card-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+</style>
 {% endblock %}

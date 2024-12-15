@@ -40,3 +40,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+// Booking form date restrictions
+document.addEventListener('DOMContentLoaded', function () {
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) {
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // Set max date to 30 days from now
+        const maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 30);
+        dateInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
+
+        // If no date is selected, default to today
+        if (!dateInput.value) {
+            dateInput.value = today;
+        }
+    }
+});

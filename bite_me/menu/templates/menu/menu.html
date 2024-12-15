@@ -2,65 +2,241 @@
 {% extends 'booking/base.html' %}
 {% load static %}
 {% block content %}
-<div class="container">
+<div class="container py-4">
     <!-- Menu Header with Search -->
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 class="mb-0">Our Menu</h2>
-        <form class="d-flex" id="menuSearchForm">
-            <input class="form-control me-2" type="search" placeholder="Search for dishes..." aria-label="Search" id="menuSearch">
-        </form>
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-menu-button-wide fs-2 text-primary me-3"></i>
+                <div>
+                    <h2 class="mb-1">Our Menu</h2>
+                    <p class="text-muted mb-0">Discover our delicious offerings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <form class="d-flex" id="menuSearchForm">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input class="form-control border-start-0 ps-0" type="search" 
+                           placeholder="Search menu items..." aria-label="Search" id="menuSearch">
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- Categories Navigation -->
+    <div class="category-nav mb-4 d-none d-lg-block">
+        <nav class="nav nav-pills">
+            {% for category in categories %}
+                <a class="nav-link me-2" href="#category-{{ category.id }}">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </nav>
+    </div>
+
+    <!-- Menu Categories -->
     {% for category in categories %}
-        <div class="category-section mb-5">
-            <h3 class="mb-4">{{ category.name }}</h3>
+        <div id="category-{{ category.id }}" class="category-section mb-5">
+            <div class="category-header mb-4">
+                <h3 class="h4 mb-0 d-inline-block border-bottom border-primary border-2 pb-2">
+                    {{ category.name }}
+                </h3>
+            </div>
             <div class="row g-4">
                 {% for item in category.items.all %}
                     <div class="col-md-6 col-lg-4 menu-item-card">
                         <div class="card h-100 shadow-sm">
-                            {% if item.image and item.image.url %}
-                                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" loading="lazy">
-                            {% else %}
-                                <img src="{% static 'img/default-menu-item.jpg' %}" class="card-img-top" alt="{{ item.name }}" loading="lazy">
-                            {% endif %}
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">{{ item.name }}</h5>
-                                <p class="card-text flex-grow-1">{{ item.description|truncatewords:20 }}</p>
-                                <div class="mt-3 d-flex justify-content-between align-items-center">
-                                    <span class="text-primary fw-bold">${{ item.price }}</span>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ item.id }}">
-                                        Details
-                                    </button>
+                            <div class="card-img-wrapper">
+                                {% if item.image and item.image.url %}
+                                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}" loading="lazy">
+                                {% else %}
+                                    <img src="{% static 'img/default-menu-item.jpg' %}" class="card-img-top" alt="{{ item.name }}" loading="lazy">
+                                {% endif %}
+                                <div class="card-img-overlay d-flex align-items-end">
+                                    <span class="badge bg-primary mb-2">{{ category.name }}</span>
                                 </div>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">{{ item.name }}</h5>
+                                    <span class="price-badge">${{ item.price }}</span>
+                                </div>
+                                <p class="card-text flex-grow-1 text-muted">{{ item.description|truncatewords:20 }}</p>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
+                                        data-bs-toggle="modal" data-bs-target="#modal{{ item.id }}">
+                                    <i class="bi bi-info-circle"></i> View Details
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Modal Structure -->
-                    <div class="modal fade" id="modal{{ item.id }}" tabindex="-1" aria-labelledby="modalLabel{{ item.id }}" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="modalLabel{{ item.id }}">{{ item.name }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            {% if item.image %}
-                                <img src="{{ item.image.url }}" class="img-fluid mb-3" alt="{{ item.name }}" loading="lazy">
-                            {% endif %}
-                            <p>{{ item.description }}</p>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          </div>
+                    <div class="modal fade" id="modal{{ item.id }}" tabindex="-1" 
+                         aria-labelledby="modalLabel{{ item.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0">
+                                <div class="modal-header border-0 pb-0">
+                                    <h5 class="modal-title fw-bold" id="modalLabel{{ item.id }}">{{ item.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" class="img-fluid rounded mb-3" 
+                                             alt="{{ item.name }}" loading="lazy">
+                                    {% endif %}
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge bg-primary">{{ category.name }}</span>
+                                        <span class="h5 mb-0 text-primary">${{ item.price }}</span>
+                                    </div>
+                                    <p class="text-muted mb-0">{{ item.description }}</p>
+                                </div>
+                                <div class="modal-footer border-0">
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'book' %}" class="btn btn-primary">
+                                            <i class="bi bi-calendar-plus"></i> Book a Table
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'login' %}" class="btn btn-primary">
+                                            <i class="bi bi-box-arrow-in-right"></i> Login to Book
+                                        </a>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
     {% empty %}
-        <div class="alert alert-info">No menu items available at the moment. Please check back later!</div>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            No menu items available at the moment. Please check back later!
+        </div>
     {% endfor %}
 </div>
+
+<!-- Add custom styles -->
+<style>
+.category-nav .nav-link {
+    color: #6c757d;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+}
+
+.category-nav .nav-link:hover {
+    color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+.category-nav .nav-link.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-img-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+}
+
+.price-badge {
+    background-color: #0d6efd;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+
+.modal-body img {
+    max-height: 300px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+.category-header h3 {
+    position: relative;
+}
+
+#menuSearchForm .input-group {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#menuSearch {
+    border-radius: 0 20px 20px 0;
+}
+
+.input-group-text {
+    border-radius: 20px 0 0 20px;
+}
+
+@media (max-width: 768px) {
+    .category-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .card-img-top {
+        height: 180px;
+    }
+}
+
+/* Smooth scrolling for category navigation */
+html {
+    scroll-behavior: smooth;
+}
+
+.category-section {
+    scroll-margin-top: 100px;
+}
+</style>
+
+<!-- Add custom script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Highlight active category in navigation
+    const categoryLinks = document.querySelectorAll('.category-nav .nav-link');
+    const categories = document.querySelectorAll('.category-section');
+    
+    function setActiveCategory() {
+        let fromTop = window.scrollY + 100;
+        
+        categories.forEach((category, index) => {
+            if (category.offsetTop <= fromTop && 
+                category.offsetTop + category.offsetHeight > fromTop) {
+                categoryLinks.forEach(link => link.classList.remove('active'));
+                categoryLinks[index].classList.add('active');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', setActiveCategory);
+    setActiveCategory();
+});
+</script>
 {% endblock %}
