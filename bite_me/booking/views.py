@@ -333,7 +333,7 @@ def admin_reservations_view(request):
     search_query = request.GET.get('search')
 
     # Base queryset
-    reservations = Reservation.objects.select_related('user').all()
+    reservations = Reservation.objects.select_related('user').prefetch_related('tables').all()
 
     # Apply filters
     if date_filter:
@@ -362,8 +362,9 @@ def admin_reservations_view(request):
             user__username__icontains=search_query
         )
 
-    # Order by date and time
-    reservations = reservations.order_by('-date', '-time')
+    # Calculate total capacity for each reservation
+    for reservation in reservations:
+        reservation.total_capacity = sum(table.capacity for table in reservation.tables.all())
 
     context = {
         'reservations': reservations,
