@@ -60,3 +60,4 @@ A modern, full-featured restaurant booking and management system built with Djan
 ## Installation
 
 1. Clone the repository: 
+2. Add .env
