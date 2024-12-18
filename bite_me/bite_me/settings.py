@@ -13,7 +13,7 @@ SECRET_KEY = 'your-secret-key-here'  # Replace with your actual secret key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to False in production
 
-ALLOWED_HOSTS = []  # Add your domain here in production
+ALLOWED_HOSTS = ['8000-cinula-biteme-9a18cwpvqax.ws.codeinstitute-ide.net']  # Add your domain here in production
 
 # Application definition
 INSTALLED_APPS = [
@@ -60,12 +60,12 @@ WSGI_APPLICATION = 'bite_me.wsgi.application'
 
 # Database
 # Using SQLite by default
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation (you can adjust as needed)
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,6 +114,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'siddharthshekhar2404@gmail.com'
+EMAIL_HOST_USER = 'cinula@gmail.com'
 EMAIL_HOST_PASSWORD = 'tvqb oags zgga varf'
-DEFAULT_FROM_EMAIL = 'Bite Me <siddharthshekhar2404@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Bite Me <cinula@gmail.com>'
