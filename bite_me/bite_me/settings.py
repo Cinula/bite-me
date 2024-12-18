@@ -13,12 +13,12 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key-here'  # Replace with your actual secret key
+SECRET_KEY = 'DjangoIsBest'  # Replace with your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to False in production
 
-ALLOWED_HOSTS = []  # Add your domain here in production
+ALLOWED_HOSTS = ['8000-cinula-biteme-9a18cwpvqax.ws.codeinstitute-ide.net']  # Add your domain here in production
 
 # Application definition
 INSTALLED_APPS = [
@@ -68,10 +68,10 @@ WSGI_APPLICATION = 'bite_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='shelf_crave_brook_900846'),
-        'USER': env('DB_USER', default='uuruog8juk6'),
-        'PASSWORD': env('DB_PASSWORD', default='3Pl4QUK2ZcSS'),
-        'HOST': env('DB_HOST', default='ep-gentle-mountain-a23bxz6h-pooler.eu-central-1.aws.neon.tech'),
+        'NAME': env('DB_NAME', default='bacon_slain_blimp_315242'),
+        'USER': env('DB_USER', default='neondb_owner'),
+        'PASSWORD': env('DB_PASSWORD', default='9pDNRqv4dLGm'),
+        'HOST': env('DB_HOST', default='ep-sparkling-breeze-a26ep6op.eu-central-1.aws.neon.tech'),
         'PORT': env('DB_PORT', default='5432'),
     }
 }
@@ -123,6 +123,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'siddharthshekhar2404@gmail.com'
+EMAIL_HOST_USER = 'cinula@gmail.com'
 EMAIL_HOST_PASSWORD = 'tvqb oags zgga varf'
-DEFAULT_FROM_EMAIL = 'Bite Me <siddharthshekhar2404@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Bite Me <cinula@gmail.com>'
