@@ -16,9 +16,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'DjangoIsBest'  # Replace with your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Set to False in production
+DEBUG = False  # Set to False in production
 
-ALLOWED_HOSTS = ['8000-cinula-biteme-ba32pkmc40a.ws.codeinstitute-ide.net']  # Add your domain here in production
+ALLOWED_HOSTS = ['8000-cinula-biteme-ba32pkmc40a.ws.codeinstitute-ide.net',
+                '.herokuapp.com']  # Add your domain here in production
 
 # Application definition
 INSTALLED_APPS = [
