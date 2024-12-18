@@ -8,7 +8,7 @@ from django.contrib.messages import constants as message_constants
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key-here'  # Replace with your actual secret key
+SECRET_KEY = 'DjangoIsBest'  # Replace with your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to False in production
@@ -60,12 +60,12 @@ WSGI_APPLICATION = 'bite_me.wsgi.application'
 
 # Database
 # Using SQLite by default
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation (you can adjust as needed)
 AUTH_PASSWORD_VALIDATORS = [
