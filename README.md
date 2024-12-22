@@ -56,8 +56,3 @@ A modern, full-featured restaurant booking and management system built with Djan
   - django-crispy-forms
   - django-widget-tweaks
   - django-environ
-
-## Installation
-
-1. Clone the repository: 
-2. Add .env
