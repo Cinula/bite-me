@@ -4,9 +4,6 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants as message_constants
 import environ
-import dj_database_url
-if os.path.isfile('env.py'):
-    import env
 
 # Initialize environ
 env = environ.Env()
@@ -70,19 +67,15 @@ WSGI_APPLICATION = 'bite_me.wsgi.application'
 
 # Database
 # Using SQLite by default
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': env('DB_NAME', default='bacon_slain_blimp_315242'),
-#         'USER': env('DB_USER', default='neondb_owner'),
-#         'PASSWORD': env('DB_PASSWORD', default='9pDNRqv4dLGm'),
-#         'HOST': env('DB_HOST', default='ep-sparkling-breeze-a26ep6op.eu-central-1.aws.neon.tech'),
-#         'PORT': env('DB_PORT', default='5432'),
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME', default='bacon_slain_blimp_315242'),
+        'USER': env('DB_USER', default='neondb_owner'),
+        'PASSWORD': env('DB_PASSWORD', default='9pDNRqv4dLGm'),
+        'HOST': env('DB_HOST', default='ep-sparkling-breeze-a26ep6op.eu-central-1.aws.neon.tech'),
+        'PORT': env('DB_PORT', default='5432'),
+    }
 }
 
 # Password validation (you can adjust as needed)
