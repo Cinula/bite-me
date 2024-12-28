@@ -71,22 +71,31 @@ A modern, full-featured restaurant booking and management system built with Djan
     They are four categories you can to navigate to, starters, main course, desserts and sides. 
     additionaly you cold navigate by meal type just above menu.
 
-    
+    ![menu](/staticfiles/img/readme.MD%20images/menu.png)
 
   - Filter by meal type (Breakfast, Lunch, Dinner)
     Switch in between the time of the day, mornig afternoon or evening. 
 
-    
+    ![menu options](/staticfiles/img/readme.MD%20images/menu%20options.png)
 
   - Detailed item descriptions and prices
     All menu iteam have secription and price 
 
-
+    ![menu item](/staticfiles/img/readme.MD%20images/menu%20item.png)
 
 
 - **Contact**
+
   - Contact form for inquiries
   - Automated email responses
+
+  On the website you thete is the contact information on the buttom or if user would like to contatk restauration by email, can use contact page. Click on Contactk in navigation bar on the top right corner, the websita wil form will open up. 
+
+  ![contact](/staticfiles/img/readme.MD%20images/contact.png)
+
+    To contact restaurant all form fileds need to be filled in corect way and press send message. 
+    on the right side you cans see address, opening hours and phone number, below you can find map with tag where user can find restaurant.
+
 
 ### Admin Features
 - **Reservation Management**
