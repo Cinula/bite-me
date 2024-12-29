@@ -1,6 +1,6 @@
 # Bite Me - Restaurant Booking System
 
-A modern, full-featured restaurant booking and management system built with Django. This application allows customers to make table reservations, view menus, and contact the restaurant, while providing staff with comprehensive management tools.
+A modern, full-featured restaurant booking and management system built with Django. This application allows customers to make table reservations, view menus, and contact the restaurant while providing staff with comprehensive management tools.
 
 ## Features
 
@@ -98,8 +98,11 @@ A modern, full-featured restaurant booking and management system built with Djan
 
 
 ### Admin Features
+  
+  As an Admin you are in charge of the website.  
+
 - **Reservation Management**
-  - View all reservations
+  - View all reservations 
   - Filter and search reservations
   - Cancel/modify bookings
   - Table allocation
@@ -129,4 +132,4 @@ A modern, full-featured restaurant booking and management system built with Djan
   - django-widget-tweaks
   - django-environ
 
-## Tests 
+## C
