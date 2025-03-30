@@ -17,7 +17,7 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'DjangoIsBest'  # Replace with your actual secret key
+SECRET_KEY = 'VN62_EFL'  # Replace with your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # Set to False in production
@@ -133,7 +133,7 @@ LOGOUT_REDIRECT_URL = 'index'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'cinula@gmail.com'
 EMAIL_HOST_PASSWORD = 'tvqb oags zgga varf'
 DEFAULT_FROM_EMAIL = 'Bite Me <cinula@gmail.com>'
