@@ -3,24 +3,23 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants as message_constants
-import environ
-import dj_database_url
-if os.path.isfile('env.py'):
-    import env
+from dotenv import load_dotenv
 
+import environ
 
 # Initialize environ
 env = environ.Env()
 environ.Env.read_env()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'VN62_EFL'  # Replace with your actual secret key
+SECRET_KEY = os.getenv('SECRET_KEY')  # Replace with your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Set to False in production
+DEBUG = env.bool('DEBUG', default=False)  # Set to False in production
 
 ALLOWED_HOSTS = ['8000-cinula-biteme-d0qhm892vct.ws-eu118.gitpod.io',
                 '.herokuapp.com']  # Add your domain here in production
@@ -74,14 +73,13 @@ WSGI_APPLICATION = 'bite_me.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='throb_trump_large_939305'),
-        'USER': env('DB_USER', default='neondb_owner'),
-        'PASSWORD': env('DB_PASSWORD', default='9pDNRqv4dLGm'),
-        'HOST': env('DB_HOST', default='ep-sparkling-breeze-a26ep6op.eu-central-1.aws.neon.tech'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='localhost'),
         'PORT': env('DB_PORT', default='5432'),
     }
 }
-
 
 # Password validation (you can adjust as needed)
 AUTH_PASSWORD_VALIDATORS = [
