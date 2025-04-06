@@ -22,6 +22,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')  # Replace with your actual secret key
 DEBUG = env.bool('DEBUG', default=False)  # Set to False in production
 
 ALLOWED_HOSTS = ['8000-cinula-biteme-d0qhm892vct.ws-eu118.gitpod.io',
+                 '127.0.0.1',
                 '.herokuapp.com']  # Add your domain here in production
 
 # Application definition
