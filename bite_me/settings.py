@@ -90,6 +90,12 @@ AUTH_PASSWORD_VALIDATORS = [
     # Add more validators if desired
 ]
 
+# CSRF verification
+CSRF_TRUSTED_ORIGINS = [
+    "https://8000-cinula-biteme-yas3xlxoxsi.ws-eu118.gitpod.io",
+    "https://*.gitpod.io",
+]
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'  # Set to your timezone
