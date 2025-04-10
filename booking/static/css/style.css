@@ -175,3 +175,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     background: transparent;
     cursor: pointer;
 }
+/* Background images*/
+.hero-slide {
+    background-image: url("/static/img/hero-3.webp");
+    background-size: cover;
+    background-position: center;
+}

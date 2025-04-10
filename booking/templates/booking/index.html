@@ -13,54 +13,81 @@
 
     <!-- Slides -->
     <div class="carousel-inner">
+
         <!-- Slide 1 -->
         <div class="carousel-item active">
-            <div class="hero-slide" style="background-image: url('{% static 'img/hero-1.webp' %}');">
-                <div class="hero-overlay"></div>
-                <div class="hero-content">
-                    <h1 class="display-4 fw-bold text-white mb-4">Welcome to Bite Me</h1>
-                    <p class="lead text-white mb-4">Experience the finest dining in a cozy atmosphere</p>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'book' %}" class="btn btn-primary btn-lg">
-                            <i class="bi bi-calendar-plus me-2"></i>Book a Table
-                        </a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
-                        </a>
-                    {% endif %}
-                </div>
+          <div class="hero-slide position-relative">
+            <img
+              src="{% static 'img/hero-1.webp' %}"
+              width="1920"
+              height="800"
+              alt="Hero Slide 1"
+              class="hero-img"
+              fetchpriority="high"
+              decoding="async"
+            />
+            <div class="hero-overlay"></div>
+            <div class="hero-content text-white text-center">
+              <h1 class="display-4 fw-bold mb-4">Welcome to Bite Me</h1>
+              <p class="lead mb-4">Experience the finest dining in a cozy atmosphere</p>
+              {% if user.is_authenticated %}
+                <a href="{% url 'book' %}" class="btn btn-primary btn-lg">
+                  <i class="bi bi-calendar-plus me-2"></i>Book a Table
+                </a>
+              {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                  <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
+                </a>
+              {% endif %}
             </div>
+          </div>
         </div>
-
+      
         <!-- Slide 2 -->
         <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('{% static 'img/hero-2.webp' %}');">
-                <div class="hero-overlay"></div>
-                <div class="hero-content">
-                    <h1 class="display-4 fw-bold text-white mb-4">Exquisite Cuisine</h1>
-                    <p class="lead text-white mb-4">Discover our chef's special creations</p>
-                    <a href="{% url 'menu' %}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-journal-text me-2"></i>View Menu
-                    </a>
-                </div>
+          <div class="hero-slide position-relative">
+            <img
+              src="{% static 'img/hero-2.webp' %}"
+              width="1920"
+              height="800"
+              alt="Hero Slide 2"
+              class="hero-img"
+              decoding="async"
+            />
+            <div class="hero-overlay"></div>
+            <div class="hero-content text-white text-center">
+              <h1 class="display-4 fw-bold mb-4">Exquisite Cuisine</h1>
+              <p class="lead mb-4">Discover our chef's special creations</p>
+              <a href="{% url 'menu' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-journal-text me-2"></i>View Menu
+              </a>
             </div>
+          </div>
         </div>
-
+      
         <!-- Slide 3 -->
         <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('{% static 'img/hero-3.jpg' %}');">
-                <div class="hero-overlay"></div>
-                <div class="hero-content">
-                    <h1 class="display-4 fw-bold text-white mb-4">Perfect Ambiance</h1>
-                    <p class="lead text-white mb-4">Create memorable moments with us</p>
-                    <a href="{% url 'book' %}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-calendar-plus me-2"></i>Reserve Now
-                    </a>
-                </div>
+          <div class="hero-slide position-relative">
+            <img
+              src="{% static 'img/hero-3.webp' %}"
+              width="1920"
+              height="800"
+              alt="Hero Slide 3"
+              class="hero-img"
+              decoding="async"
+            />
+            <div class="hero-overlay"></div>
+            <div class="hero-content text-white text-center">
+              <h1 class="display-4 fw-bold mb-4">Perfect Ambiance</h1>
+              <p class="lead mb-4">Create memorable moments with us</p>
+              <a href="{% url 'book' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-calendar-plus me-2"></i>Reserve Now
+              </a>
             </div>
+          </div>
         </div>
-    </div>
+      
+      </div>
 
     <!-- Controls -->
     <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev">
@@ -129,37 +156,38 @@
 
 <!-- Update the styles -->
 <style>
-#heroSlider {
-    margin-top: -1.5rem;
-    margin-bottom: 3rem;
-    width: 100%;
+.hero-slide {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hero-slide {
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.hero-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
 }
 
 .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
 }
 
 .hero-content {
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
-    padding: 2rem;
-    text-align: center;
+  position: relative;
+  z-index: 3;
 }
 
 .carousel-indicators {
