@@ -23,7 +23,7 @@ DEBUG = env.bool('DEBUG', default=False)  # Set to False in production
 
 ALLOWED_HOSTS = ['8000-cinula-biteme-d0qhm892vct.ws-eu118.gitpod.io',
                  '8000-cinula-biteme-yas3xlxoxsi.ws-eu118.gitpod.io',
-                '.herokuapp.com']  # Add your domain here in production
+                'biteme-9a7698e5c69c.herokuapp.com']  # Add your domain here in production
 
 # Application definition
 INSTALLED_APPS = [
@@ -107,7 +107,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'booking', 'static'),]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
