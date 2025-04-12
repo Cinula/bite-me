@@ -96,13 +96,54 @@ A modern, full-featured restaurant booking and management system built with Djan
     To contact the restaurant all form fields need to be filled correctly and she sends a message. 
     On the right side, you can see the address, opening hours and phone number, you can find a map with a tag where Users can find restaurants.
 
+## Testing
+
+This project includes comprehensive automated tests to ensure reliability and maintainability. Tests are written using Django’s built-in `unittest` framework.
+
+### What’s Covered
+
+#### Booking App
+- **Model Tests**: `Table`, `Reservation`, `Contact`, and `EmailLog` models are tested for:
+  - String representations
+  - Relationship integrity (e.g. reservation ↔ tables)
+  - Default field values
+
+- **Form Tests**:
+  - `ReservationForm`: Validates guest limits, date ranges (0–30 days), and time ranges (11:00–22:00)
+  - `UserProfileForm`: Validates password change logic and email/username updates
+  - `RegistrationForm`: Validates email uniqueness and user creation
+
+- **View Tests**:
+  - Added auth protection for views like `create_reservation_view` and `my_bookings_view`
+  - Proper template rendering
+  - Access control (403 or redirect for unauthorised access)
+
+#### Menu App
+- **Model Tests**: `Category` and `MenuItem` models are tested for:
+  - String representations
+  - Reverse relationship (`category.items.all()`)
+
+- **Form Tests**:
+  - `MenuItemForm`: Validates required fields, price formats, and meal type choices
+
+- **View Tests** *(optional)*:
+  - Test separately if implemented (admin panel, menu editing, etc.)
+
+---
+
+### How to Run Tests Locally
+
+  Python manage.py test
+  python manage.py test booking.test_models
+  python manage.py test menu.test_forms
+  
 
 ### Admin Features
   
-  As an Admin you are in charge of the website: 
+  As an Admin, you are in charge of the website: 
 
 - **Reservation Management**
-  - View all reservations ( History and upcoming reservetion)
+  - View all reservations ( History and upcoming reservations)
   - Filter and search reservations
   - Cancel/modify bookings
   - Table allocation
