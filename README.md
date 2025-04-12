@@ -200,6 +200,26 @@ chose your repository from Github by name and click connect to link your Heroku 
 At the bottom of the page are automatic and manual deploy, I use the manual deploy.
 To test the app click open app from the top right corner.
 
+## Database configuration change
+
+  Why I Changed the Database Configuration
+  In the process of deploying the Bite Me - Restaurant Booking System to Heroku, I opted to change the database configuration from the default SQLite (used for local development) to PostgreSQL for the production environment.
+
+  Here’s why:
+  Security and Sensitive Information:
+
+  SQLite stores data directly within the project, which can inadvertently expose sensitive information (like user details, passwords, etc.) when the code is deployed publicly. This creates a potential risk of sensitive data leakage.
+
+  By switching to PostgreSQL (a more robust database system), I have separated the data layer from the application, and now the sensitive information (like user credentials, reservations, and communication logs) is stored securely in the cloud.
+
+  Scaling and Performance:
+
+  PostgreSQL is a highly scalable database system, ideal for production environments. It allows for better performance, reliability, and easier data management as the app grows.
+
+  Heroku Compatibility:
+
+  Heroku’s cloud platform works seamlessly with PostgreSQL, providing built-in database
+
 ## Credits
 
 The information about website was taken from Code Institute from idea example 1.
